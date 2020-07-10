@@ -53,15 +53,9 @@
     </property>
     <item>
      <widget class="QFrame" name="frame">
-      <property name="minimumSize">
-       <size>
-        <width>80</width>
-        <height>0</height>
-       </size>
-      </property>
       <property name="maximumSize">
        <size>
-        <width>80</width>
+        <width>0</width>
         <height>16777215</height>
        </size>
       </property>
@@ -653,12 +647,6 @@ QToolButton:disabled{
        <number>3</number>
       </property>
       <widget class="QFrame" name="leftFrame">
-       <property name="minimumSize">
-        <size>
-         <width>300</width>
-         <height>0</height>
-        </size>
-       </property>
        <property name="maximumSize">
         <size>
          <width>500</width>
