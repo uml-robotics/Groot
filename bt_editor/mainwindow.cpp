@@ -141,7 +141,7 @@ MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
     connect( _editor_widget, &SidepanelEditor::addSubtree,
              this, [this](QString ID)
     {
-        this->createTab(ID);
+        this->createTab(ID, ui->tabWidget);
     });
 
     connect( _editor_widget, &SidepanelEditor::renameSubtree,
@@ -190,7 +190,9 @@ MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
     connect( ui->tabWidget->tabBar(), &QTabBar::customContextMenuRequested,
             this, &MainWindow::onTabCustomContextMenuRequested);
 
-    createTab("BehaviorTree");
+    createTab("BehaviorTree", ui->tabWidget);
+    createTab("anotherTree", ui->tabWidget_2);
+
     onTabSetMainTree(0);
     onSceneChanged();
     _current_state = saveCurrentState();
@@ -218,7 +220,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 }
 
 
-GraphicContainer* MainWindow::createTab(const QString &name)
+GraphicContainer * MainWindow::createTab(const QString &name, QTabWidget *tabwidget)
 {
     if( _tab_info.count(name) > 0)
     {
@@ -229,7 +231,7 @@ GraphicContainer* MainWindow::createTab(const QString &name)
 
     ti->scene()->setLayout( _current_layout );
 
-    ui->tabWidget->addTab( ti->view(), name );
+    tabwidget->addTab( ti->view(), name );
 
     ti->scene()->createNodeAtPos( "Root", "Root", QPointF(-30,-30) );
     ti->zoomHomeView();
@@ -357,7 +359,7 @@ void MainWindow::loadFromXML(const QString& xml_text)
 
         if( currentTabInfo() == nullptr)
         {
-            createTab("BehaviorTree");
+            createTab("BehaviorTree", ui->tabWidget);
             _main_tree = "BehaviorTree";
         }
         else{
@@ -811,7 +813,7 @@ void MainWindow::loadSavedStateFromJson(SavedState saved_state)
     for(const auto& it: saved_state.json_states)
     {
         QString tab_name = it.first;
-        _tab_info.insert( {tab_name, createTab(tab_name)} );
+        _tab_info.insert( {tab_name, createTab(tab_name, ui->tabWidget)} );
     }
     for(const auto& it: saved_state.json_states)
     {
@@ -1125,7 +1127,7 @@ void MainWindow::onCreateAbsBehaviorTree(const AbsBehaviorTree &tree, const QStr
     auto container = getTabByName(bt_name);
     if( !container )
     {
-        container = createTab(bt_name);
+        container = createTab(bt_name, ui->tabWidget);
     }
     const QSignalBlocker blocker( container );
     container->loadSceneFromTree( tree );
@@ -1135,7 +1137,7 @@ void MainWindow::onCreateAbsBehaviorTree(const AbsBehaviorTree &tree, const QStr
     {
         if( node.model.type == NodeType::SUBTREE && getTabByName(node.model.registration_ID) == nullptr)
         {
-            createTab(node.model.registration_ID);
+            createTab(node.model.registration_ID, ui->tabWidget);
         }
     }
 
@@ -1212,7 +1214,7 @@ void MainWindow::onActionClearTriggered(bool create_new)
     ui->tabWidget->clear();
     if( create_new )
     {
-        createTab("BehaviorTree");
+        createTab("BehaviorTree", ui->tabWidget);
     }
 
     _editor_widget->clear();

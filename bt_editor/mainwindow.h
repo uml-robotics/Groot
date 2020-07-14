@@ -136,7 +136,7 @@ private:
 
     void resizeEvent(QResizeEvent *) override;
 
-    GraphicContainer* createTab(const QString &name);
+    GraphicContainer *createTab(const QString &name, QTabWidget *tabwidget);
 
     void refreshNodesLayout(QtNodes::PortLayout new_layout);
 
