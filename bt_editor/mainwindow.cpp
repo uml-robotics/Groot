@@ -71,6 +71,142 @@ void MainWindow::createAbsBehaviorTree(const AbsBehaviorTree &tree, const QStrin
 //    clearUndoStacks();
 }
 
+void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, QTabWidget* target_widget) {
+    QDomDocument document;
+    cout << "LOADING FROM XML\n" << endl;
+
+    try{
+        QString errorMsg;
+        int errorLine;
+        if( ! document.setContent(xml_text, &errorMsg, &errorLine ) )
+        {
+            throw std::runtime_error( tr("Error parsing XML (line %1): %2").arg(errorLine).arg(errorMsg).toStdString() );
+        }
+        //---------------
+        std::vector<QString> registered_ID;
+        for (const auto& it: _treenode_models)
+        {
+            registered_ID.push_back( it.first );
+        }
+        std::vector<QString> error_messages;
+        bool done = VerifyXML(document, registered_ID, error_messages );
+
+        if( !done )
+        {
+            QString merged_error;
+            for (const auto& err: error_messages)
+            {
+                merged_error += err + "\n";
+            }
+            throw std::runtime_error( merged_error.toStdString() );
+        }
+    }
+    catch( std::runtime_error& err)
+    {
+        QMessageBox messageBox;
+        messageBox.critical(this,"Error parsing the XML", err.what() );
+        messageBox.show();
+        return;
+    }
+
+    //---------------
+    bool error = false;
+    QString err_message;
+    auto saved_state = _current_state;
+    auto prev_tree_model = _treenode_models;
+
+    try {
+        auto document_root = document.documentElement();
+
+        if( document_root.hasAttribute("main_tree_to_execute"))
+        {
+            _main_tree = document_root.attribute("main_tree_to_execute");
+        }
+
+        auto custom_models = ReadTreeNodesModel( document_root );
+
+        for( const auto& model: custom_models)
+        {
+            onAddToModelRegistry( model.second );
+        }
+
+        _editor_widget->updateTreeView();
+
+        onActionClearTriggered(false);
+
+        const QSignalBlocker blocker( currentTabInfo() );
+
+        for (auto bt_root = document_root.firstChildElement("BehaviorTree");
+             !bt_root.isNull();
+             bt_root = bt_root.nextSiblingElement("BehaviorTree"))
+        {
+            auto tree = BuildTreeFromXML( bt_root, _treenode_models );
+            QString tree_name("BehaviorTree");
+
+            if( bt_root.hasAttribute("ID") )
+            {
+                tree_name = bt_root.attribute("ID");
+                if( _main_tree.isEmpty() )  // valid when there is only one
+                {
+                    _main_tree = tree_name;
+                }
+            }
+//            onCreateAbsBehaviorTree(tree, tree_name);
+//            createAbsBehaviorTree(tree, "left tab", ui->tabWidget);
+//            createAbsBehaviorTree(tree, "right tab", ui->tabWidget_2);
+            createAbsBehaviorTree(tree, name, target_widget);
+        }
+
+        if( !_main_tree.isEmpty() )
+        {
+            for (int i=0; i< ui->tabWidget->count(); i++)
+            {
+                if( ui->tabWidget->tabText( i ) == _main_tree)
+                {
+                    ui->tabWidget->tabBar()->moveTab(i, 0);
+                    ui->tabWidget->setCurrentIndex(0);
+                    ui->tabWidget->tabBar()->setTabIcon(0, QIcon(":/icons/svg/star.svg"));
+                    break;
+                }
+            }
+        }
+
+        if( true)
+        {
+            createTab("BehaviorTree", ui->tabWidget);
+            _main_tree = "BehaviorTree";
+        }
+        else{
+            currentTabInfo()->nodeReorder();
+        }
+        auto models_to_remove = GetModelsToRemove(this, _treenode_models, custom_models);
+
+        for( QString model_name: models_to_remove )
+        {
+            onModelRemoveRequested(model_name);
+        }
+    }
+    catch (std::exception& err) {
+        error = true;
+        err_message = err.what();
+        cout << "ERROR MESSAGE: " << err.what() <<endl;
+    }
+
+    if( error )
+    {
+        _treenode_models = prev_tree_model;
+        loadSavedStateFromJson( saved_state );
+        qDebug() << "R: Undo size: " << _undo_stack.size() << " Redo size: " << _redo_stack.size();
+        QMessageBox::warning(this, tr("Exception!"),
+                             tr("It was not possible to parse the file. Error:\n\n%1"). arg( err_message ),
+                             QMessageBox::Ok);
+    }
+    else{
+        onSceneChanged();
+        onPushUndo();
+    }
+}
+
 MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
                                                                     QMainWindow(parent),
                                                                     ui(new Ui::MainWindow),
@@ -459,7 +595,7 @@ void MainWindow::on_actionLoad_triggered()
         xml_text += in.readLine();
     }
 
-    loadFromXML(xml_text);
+    newLoadFromXML(xml_text, "steve", ui->tabWidget_2);
 }
 
 QString MainWindow::saveToXML() const

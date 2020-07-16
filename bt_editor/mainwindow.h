@@ -47,6 +47,8 @@ public:
 
     void loadFromXML(const QString &xml_text);
 
+    void newLoadFromXML(const QString &xml_text, const QString &name, QTabWidget* target_widget);
+
     QString saveToXML() const ;
 
     GraphicContainer* currentTabInfo();
