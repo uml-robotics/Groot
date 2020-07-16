@@ -1134,13 +1134,20 @@ void MainWindow::onCreateAbsBehaviorTree(const AbsBehaviorTree &tree, const QStr
 {
     cout << "CREATING ABS\n";
     auto container = getTabByName(bt_name);
+    auto container2 = getTabByName(bt_name);
     if( !container )
     {
+        cout << "MAKING NEW TABS\n";
         container = createTab("THIS tab", ui->tabWidget_2);
+        container2 = createTab("thiSS tab", ui->tabWidget);
     }
     const QSignalBlocker blocker( container );
     container->loadSceneFromTree( tree );
     container->nodeReorder();
+
+    const QSignalBlocker blocker2( container2 );
+    container2->loadSceneFromTree( tree );
+    container2->nodeReorder();
 
     for(const auto& node: tree.nodes())
     {
