@@ -154,11 +154,11 @@ MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
         if (prev_ID == new_ID)
             return;
             
-        for (int index = 0; index < ui->tabWidget->count(); index++)
+        for (int index = 0; index < ui->tabWidget_2->count(); index++)
         {
-            if( ui->tabWidget->tabText(index) == prev_ID)
+            if( ui->tabWidget_2->tabText(index) == prev_ID)
             {
-                ui->tabWidget->setTabText(index, new_ID);
+                ui->tabWidget_2->setTabText(index, new_ID);
                 _tab_info.insert( {new_ID, _tab_info.at(prev_ID)}  );
                 _tab_info.erase( prev_ID );
                 break;
@@ -190,11 +190,11 @@ MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
             this, &MainWindow::onCreateAbsBehaviorTree );
 #endif
 
-    ui->tabWidget->tabBar()->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect( ui->tabWidget->tabBar(), &QTabBar::customContextMenuRequested,
+    ui->tabWidget_2->tabBar()->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect( ui->tabWidget_2->tabBar(), &QTabBar::customContextMenuRequested,
             this, &MainWindow::onTabCustomContextMenuRequested);
 
-    createTab("BehaviorTree", ui->tabWidget);
+    createTab("BehaviorTree", ui->tabWidget_2);
     createTab("anotherTree", ui->tabWidget_2);
 
     onTabSetMainTree(0);
@@ -685,8 +685,8 @@ void MainWindow::onSceneChanged()
 
 GraphicContainer* MainWindow::currentTabInfo()
 {
-    int index = ui->tabWidget->currentIndex();
-    QString tab_name = ui->tabWidget->tabText(index);
+    int index = ui->tabWidget_2->currentIndex();
+    QString tab_name = ui->tabWidget_2->tabText(index);
     return getTabByName(tab_name);
 }
 
@@ -744,9 +744,9 @@ void MainWindow::on_splitter_splitterMoved(int , int )
 MainWindow::SavedState MainWindow::saveCurrentState()
 {
     SavedState saved;
-    int index = ui->tabWidget->currentIndex();
+    int index = ui->tabWidget_2->currentIndex();
     saved.main_tree = _main_tree;
-    saved.current_tab_name = ui->tabWidget->tabText(index);
+    saved.current_tab_name = ui->tabWidget_2->tabText(index);
     auto current_view = getTabByName( saved.current_tab_name )->view();
     saved.view_transform = current_view->transform();
     saved.view_area = current_view->sceneRect();
@@ -813,14 +813,14 @@ void MainWindow::loadSavedStateFromJson(SavedState saved_state)
         it.second->deleteLater();
     }
     _tab_info.clear();
-    ui->tabWidget->clear();
+    ui->tabWidget_2->clear();
 
     _main_tree = saved_state.main_tree;
 
     for(const auto& it: saved_state.json_states)
     {
         QString tab_name = it.first;
-        _tab_info.insert( {tab_name, createTab(tab_name, ui->tabWidget)} );
+        _tab_info.insert( {tab_name, createTab(tab_name, ui->tabWidget_2)} );
     }
     for(const auto& it: saved_state.json_states)
     {
@@ -831,19 +831,19 @@ void MainWindow::loadSavedStateFromJson(SavedState saved_state)
         container->view()->setSceneRect( saved_state.view_area );
     }
 
-    for (int i=0; i< ui->tabWidget->count(); i++)
+    for (int i=0; i< ui->tabWidget_2->count(); i++)
     {
-        if( ui->tabWidget->tabText( i ) == saved_state.current_tab_name)
+        if( ui->tabWidget_2->tabText( i ) == saved_state.current_tab_name)
         {
-            ui->tabWidget->setCurrentIndex(i);
-            ui->tabWidget->widget(i)->setFocus();
+            ui->tabWidget_2->setCurrentIndex(i);
+            ui->tabWidget_2->widget(i)->setFocus();
         }
-        if( ui->tabWidget->tabText(i) == _main_tree)
+        if( ui->tabWidget_2->tabText(i) == _main_tree)
         {
             onTabSetMainTree(i);
         }
     }
-    if( ui->tabWidget->count() == 1 )
+    if( ui->tabWidget_2->count() == 1 )
     {
         onTabSetMainTree(0);
     }
@@ -940,19 +940,19 @@ void MainWindow::onDestroySubTree(const QString &ID)
         container->nodeReorder();
     }
 
-    for( int index = 0; index < ui->tabWidget->count(); index++)
+    for( int index = 0; index < ui->tabWidget_2->count(); index++)
     {
-        if( ui->tabWidget->tabText(index) == ID)
+        if( ui->tabWidget_2->tabText(index) == ID)
         {
             sub_container->scene()->clearScene();
             sub_container->deleteLater();
-            ui->tabWidget->removeTab( index );
+            ui->tabWidget_2->removeTab( index );
             _tab_info.erase(ID);
             break;
         }
     }
 
-    if( ui->tabWidget->count() == 1 )
+    if( ui->tabWidget_2->count() == 1 )
     {
         onTabSetMainTree(0);
     }
@@ -1134,7 +1134,7 @@ void MainWindow::onCreateAbsBehaviorTree(const AbsBehaviorTree &tree, const QStr
     auto container = getTabByName(bt_name);
     if( !container )
     {
-        container = createTab(bt_name, ui->tabWidget);
+        container = createTab(bt_name, ui->tabWidget_2);
     }
     const QSignalBlocker blocker( container );
     container->loadSceneFromTree( tree );
@@ -1144,7 +1144,7 @@ void MainWindow::onCreateAbsBehaviorTree(const AbsBehaviorTree &tree, const QStr
     {
         if( node.model.type == NodeType::SUBTREE && getTabByName(node.model.registration_ID) == nullptr)
         {
-            createTab(node.model.registration_ID, ui->tabWidget);
+            createTab(node.model.registration_ID, ui->tabWidget_2);
         }
     }
 
@@ -1218,10 +1218,10 @@ void MainWindow::onActionClearTriggered(bool create_new)
     }
     _tab_info.clear();
 
-    ui->tabWidget->clear();
+    ui->tabWidget_2->clear();
     if( create_new )
     {
-        createTab("BehaviorTree", ui->tabWidget);
+        createTab("BehaviorTree", ui->tabWidget_2);
     }
 
     _editor_widget->clear();
@@ -1430,17 +1430,17 @@ void MainWindow::on_actionReplay_mode_triggered()
 
 void MainWindow::on_tabWidget_currentChanged(int index)
 {
-    if( ui->tabWidget->count() == 0 )
+    if( ui->tabWidget_2->count() == 0 )
     {
         return;
     }
-    QString tab_name = ui->tabWidget->tabText(index);
+    QString tab_name = ui->tabWidget_2->tabText(index);
     auto tab = getTabByName(tab_name);
     if( tab )
     {
         const QSignalBlocker blocker( tab );
         tab->nodeReorder();
-        _current_state.current_tab_name = ui->tabWidget->tabText( index );
+        _current_state.current_tab_name = ui->tabWidget_2->tabText( index );
         refreshExpandedSubtrees();
         tab->zoomHomeView();
     }
@@ -1498,7 +1498,7 @@ void MainWindow::onChangeNodesStatus(const QString& bt_name,
 
 void MainWindow::onTabCustomContextMenuRequested(const QPoint &pos)
 {
-    int tab_index = ui->tabWidget->tabBar()->tabAt( pos );
+    int tab_index = ui->tabWidget_2->tabBar()->tabAt( pos );
 
     QMenu menu(this);
     QAction* rename   = menu.addAction("Rename");
@@ -1515,13 +1515,13 @@ void MainWindow::onTabCustomContextMenuRequested(const QPoint &pos)
                 onTabSetMainTree(tab_index);
             } );
 
-    QPoint globalPos = ui->tabWidget->tabBar()->mapToGlobal(pos);
+    QPoint globalPos = ui->tabWidget_2->tabBar()->mapToGlobal(pos);
     menu.exec(globalPos);
 }
 
 void MainWindow::onTabRenameRequested(int tab_index, QString new_name)
 {
-    QString old_name = this->ui->tabWidget->tabText(tab_index);
+    QString old_name = this->ui->tabWidget_2->tabText(tab_index);
 
     if( new_name.isEmpty())
     {
@@ -1549,7 +1549,7 @@ void MainWindow::onTabRenameRequested(int tab_index, QString new_name)
         return;
     }
 
-    ui->tabWidget->setTabText (tab_index, new_name);
+    ui->tabWidget_2->setTabText (tab_index, new_name);
     auto it = _tab_info.find(old_name);
     auto container = it->second;
     _tab_info.insert( {new_name, container} );
@@ -1578,15 +1578,15 @@ void MainWindow::onTabRenameRequested(int tab_index, QString new_name)
 
 void MainWindow::onTabSetMainTree(int tab_index)
 {
-    for (int i=0; i<ui->tabWidget->count(); i++ )
+    for (int i=0; i<ui->tabWidget_2->count(); i++ )
     {
         if( i == tab_index )
         {
-            ui->tabWidget->tabBar()->setTabIcon(i, QIcon(":/icons/svg/star.svg") );
-            _main_tree = ui->tabWidget->tabBar()->tabText(i);
+            ui->tabWidget_2->tabBar()->setTabIcon(i, QIcon(":/icons/svg/star.svg") );
+            _main_tree = ui->tabWidget_2->tabBar()->tabText(i);
         }
         else{
-            ui->tabWidget->tabBar()->setTabIcon( i, QIcon());
+            ui->tabWidget_2->tabBar()->setTabIcon( i, QIcon());
         }
     }
 }
