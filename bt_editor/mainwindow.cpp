@@ -1527,7 +1527,7 @@ void MainWindow::onTabCustomContextMenuRequested(const QPoint &pos)
 void MainWindow::onTabRenameRequested(int tab_index, QString new_name)
 {
     cout << "RENAME\n";
-    QString old_name = this->ui->tabWidget_2->tabText(tab_index);
+    QString old_name = this->ui->tabWidget->tabText(tab_index);
 
     if( new_name.isEmpty())
     {
@@ -1555,7 +1555,7 @@ void MainWindow::onTabRenameRequested(int tab_index, QString new_name)
         return;
     }
 
-    ui->tabWidget_2->setTabText (tab_index, new_name);
+    ui->tabWidget->setTabText (tab_index, new_name);
     auto it = _tab_info.find(old_name);
     auto container = it->second;
     _tab_info.insert( {new_name, container} );
