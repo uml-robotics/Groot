@@ -30,6 +30,8 @@
 #include "models/RootNodeModel.hpp"
 #include "models/SubtreeNodeModel.hpp"
 #include <iostream>
+#include <cstdlib>
+#include <string>
 
 #include "utils.h"
 
@@ -47,10 +49,12 @@ void MainWindow::createAbsBehaviorTree(const AbsBehaviorTree &tree, const QStrin
 {
     cout << "CREATING ABS FANCILY\n";
     auto container = getTabByName(bt_name);
+    static QString name = "abc";
+    name += "d";
     if( !container )
     {
         cout << "MAKING NEW TABS\n";
-        container = createTab("left tab", target_widget);
+        container = createTab(name, target_widget);
     }
     const QSignalBlocker blocker( container );
     container->loadSceneFromTree( tree );
@@ -373,6 +377,7 @@ void MainWindow::loadFromXML(const QString& xml_text)
             }
 //            onCreateAbsBehaviorTree(tree, tree_name);
             createAbsBehaviorTree(tree, tree_name, ui->tabWidget_2);
+            createAbsBehaviorTree(tree, tree_name, ui->tabWidget);
         }
 
         if( !_main_tree.isEmpty() )
@@ -407,6 +412,7 @@ void MainWindow::loadFromXML(const QString& xml_text)
     catch (std::exception& err) {
         error = true;
         err_message = err.what();
+        cout << "ERROR MESSAGE: " << err.what() <<endl;
     }
 
     if( error )
