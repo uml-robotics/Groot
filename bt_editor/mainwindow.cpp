@@ -1138,8 +1138,8 @@ void MainWindow::onCreateAbsBehaviorTree(const AbsBehaviorTree &tree, const QStr
     if( !container )
     {
         cout << "MAKING NEW TABS\n";
-        container = createTab("THIS tab", ui->tabWidget_2);
-        container2 = createTab("thiSS tab", ui->tabWidget);
+        container = createTab("left tab", ui->tabWidget);
+        container2 = createTab("right tab", ui->tabWidget_2);
     }
     const QSignalBlocker blocker( container );
     container->loadSceneFromTree( tree );
@@ -1153,7 +1153,7 @@ void MainWindow::onCreateAbsBehaviorTree(const AbsBehaviorTree &tree, const QStr
     {
         if( node.model.type == NodeType::SUBTREE && getTabByName(node.model.registration_ID) == nullptr)
         {
-            createTab("chuck norris", ui->tabWidget_2);
+            createTab("a subtree", ui->tabWidget_2);
         }
     }
 
