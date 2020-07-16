@@ -268,7 +268,7 @@ MainWindow::~MainWindow()
 void MainWindow::loadFromXML(const QString& xml_text)
 {
     QDomDocument document;
-    cout << "HI AGAIN\n" << endl;
+    cout << "LOADING FROM XML\n" << endl;
 
     try{
         QString errorMsg;
@@ -1224,7 +1224,7 @@ void MainWindow::onActionClearTriggered(bool create_new)
     ui->tabWidget_2->clear();
     if( create_new )
     {
-        createTab("BehaviorTree", ui->tabWidget_2);
+        createTab("BehaviorTree", ui->tabWidget);
     }
 
     _editor_widget->clear();
@@ -1584,7 +1584,7 @@ void MainWindow::onTabRenameRequested(int tab_index, QString new_name)
 
 void MainWindow::onTabSetMainTree(int tab_index)
 {
-    cout << "SET MAIN TREE";
+    cout << "SET MAIN TREE\n";
     for (int i=0; i<ui->tabWidget->count(); i++ )
     {
         if( i == tab_index )
