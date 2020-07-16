@@ -154,11 +154,11 @@ MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
         if (prev_ID == new_ID)
             return;
             
-        for (int index = 0; index < ui->tabWidget_2->count(); index++)
+        for (int index = 0; index < ui->tabWidget->count(); index++)
         {
-            if( ui->tabWidget_2->tabText(index) == prev_ID)
+            if( ui->tabWidget->tabText(index) == prev_ID)
             {
-                ui->tabWidget_2->setTabText(index, new_ID);
+                ui->tabWidget->setTabText(index, new_ID);
                 _tab_info.insert( {new_ID, _tab_info.at(prev_ID)}  );
                 _tab_info.erase( prev_ID );
                 break;
@@ -190,11 +190,11 @@ MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
             this, &MainWindow::onCreateAbsBehaviorTree );
 #endif
 
-    ui->tabWidget_2->tabBar()->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect( ui->tabWidget_2->tabBar(), &QTabBar::customContextMenuRequested,
+    ui->tabWidget->tabBar()->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect( ui->tabWidget->tabBar(), &QTabBar::customContextMenuRequested,
             this, &MainWindow::onTabCustomContextMenuRequested);
 
-    createTab("BehaviorTree", ui->tabWidget_2);
+    createTab("BehaviorTree", ui->tabWidget);
     createTab("anotherTree", ui->tabWidget_2);
 
     onTabSetMainTree(0);
