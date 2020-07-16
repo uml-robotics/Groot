@@ -29,6 +29,7 @@
 
 #include "models/RootNodeModel.hpp"
 #include "models/SubtreeNodeModel.hpp"
+#include <iostream>
 
 #include "utils.h"
 
@@ -39,6 +40,8 @@ using QtNodes::FlowView;
 using QtNodes::FlowScene;
 using QtNodes::NodeGraphicsObject;
 using QtNodes::NodeState;
+using std::cout;
+using std::endl;
 
 MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
                                                                     QMainWindow(parent),
@@ -47,6 +50,7 @@ MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
                                                                     _current_layout(QtNodes::PortLayout::Vertical)
 {
     ui->setupUi(this);
+    cout << "HI" << endl;
 
     QSettings settings;
     restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
@@ -264,6 +268,8 @@ MainWindow::~MainWindow()
 void MainWindow::loadFromXML(const QString& xml_text)
 {
     QDomDocument document;
+    cout << "HI AGAIN\n" << endl;
+
     try{
         QString errorMsg;
         int errorLine;
@@ -345,21 +351,22 @@ void MainWindow::loadFromXML(const QString& xml_text)
 
         if( !_main_tree.isEmpty() )
         {
-            for (int i=0; i< ui->tabWidget->count(); i++)
+            for (int i=0; i< ui->tabWidget_2->count(); i++)
             {
-                if( ui->tabWidget->tabText( i ) == _main_tree)
+                if( ui->tabWidget_2->tabText( i ) == _main_tree)
                 {
-                    ui->tabWidget->tabBar()->moveTab(i, 0);
-                    ui->tabWidget->setCurrentIndex(0);
-                    ui->tabWidget->tabBar()->setTabIcon(0, QIcon(":/icons/svg/star.svg"));
+                    ui->tabWidget_2->tabBar()->moveTab(i, 0);
+                    ui->tabWidget_2->setCurrentIndex(0);
+                    ui->tabWidget_2->tabBar()->setTabIcon(0, QIcon(":/icons/svg/star.svg"));
                     break;
                 }
             }
         }
 
-        if( currentTabInfo() == nullptr)
+        if( true)
         {
-            createTab("BehaviorTree", ui->tabWidget);
+            createTab("BehaviorTree", ui->tabWidget_2);
+            cout << "GREETINGS\n";
             _main_tree = "BehaviorTree";
         }
         else{
