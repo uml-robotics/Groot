@@ -49,12 +49,10 @@ void MainWindow::createAbsBehaviorTree(const AbsBehaviorTree &tree, const QStrin
 {
     cout << "CREATING ABS FANCILY\n";
     auto container = getTabByName(bt_name);
-    static QString name = "abc";
-    name += "d";
     if( !container )
     {
         cout << "MAKING NEW TABS\n";
-        container = createTab(name, target_widget);
+        container = createTab(bt_name, target_widget);
     }
     const QSignalBlocker blocker( container );
     container->loadSceneFromTree( tree );
@@ -376,8 +374,8 @@ void MainWindow::loadFromXML(const QString& xml_text)
                 }
             }
 //            onCreateAbsBehaviorTree(tree, tree_name);
-            createAbsBehaviorTree(tree, tree_name, ui->tabWidget_2);
-            createAbsBehaviorTree(tree, tree_name, ui->tabWidget);
+            createAbsBehaviorTree(tree, "left tab", ui->tabWidget);
+            createAbsBehaviorTree(tree, "right tab", ui->tabWidget_2);
         }
 
         if( !_main_tree.isEmpty() )
