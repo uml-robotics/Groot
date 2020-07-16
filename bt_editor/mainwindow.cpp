@@ -1136,7 +1136,7 @@ void MainWindow::onCreateAbsBehaviorTree(const AbsBehaviorTree &tree, const QStr
     auto container = getTabByName(bt_name);
     if( !container )
     {
-        container = createTab(bt_name, ui->tabWidget_2);
+        container = createTab("THIS tab", ui->tabWidget_2);
     }
     const QSignalBlocker blocker( container );
     container->loadSceneFromTree( tree );
@@ -1146,7 +1146,7 @@ void MainWindow::onCreateAbsBehaviorTree(const AbsBehaviorTree &tree, const QStr
     {
         if( node.model.type == NodeType::SUBTREE && getTabByName(node.model.registration_ID) == nullptr)
         {
-            createTab(node.model.registration_ID, ui->tabWidget_2);
+            createTab("chuck norris", ui->tabWidget_2);
         }
     }
 
@@ -1436,6 +1436,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     cout << "CURRENT CHANGED\n";
     if( ui->tabWidget_2->count() == 0 )
     {
+        cout << "RETURNING\n";
         return;
     }
     QString tab_name = ui->tabWidget_2->tabText(index);
