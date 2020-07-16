@@ -43,6 +43,32 @@ using QtNodes::NodeState;
 using std::cout;
 using std::endl;
 
+void MainWindow::createAbsBehaviorTree(const AbsBehaviorTree &tree, const QString &bt_name, QTabWidget * target_widget)
+{
+    cout << "CREATING ABS FANCILY\n";
+    auto container = getTabByName(bt_name);
+    if( !container )
+    {
+        cout << "MAKING NEW TABS\n";
+        container = createTab("left tab", target_widget);
+    }
+    const QSignalBlocker blocker( container );
+    container->loadSceneFromTree( tree );
+    container->nodeReorder();
+
+
+    for(const auto& node: tree.nodes())
+    {
+        if( node.model.type == NodeType::SUBTREE && getTabByName(node.model.registration_ID) == nullptr)
+        {
+            createTab("a subtree", target_widget);
+        }
+    }
+
+    // TODO_ clear or not?
+//    clearUndoStacks();
+}
+
 MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
                                                                     QMainWindow(parent),
                                                                     ui(new Ui::MainWindow),
@@ -345,7 +371,8 @@ void MainWindow::loadFromXML(const QString& xml_text)
                     _main_tree = tree_name;
                 }
             }
-            onCreateAbsBehaviorTree(tree, tree_name);
+//            onCreateAbsBehaviorTree(tree, tree_name);
+            createAbsBehaviorTree(tree, tree_name, ui->tabWidget_2);
         }
 
         if( !_main_tree.isEmpty() )

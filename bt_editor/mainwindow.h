@@ -57,6 +57,8 @@ public:
 
     const NodeModels &registeredModels() const;
 
+    void createAbsBehaviorTree(const AbsBehaviorTree &tree, const QString &bt_name, QTabWidget * target_widget);
+
 public slots:
 
     void onAutoArrange();
