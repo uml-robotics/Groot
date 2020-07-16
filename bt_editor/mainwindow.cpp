@@ -743,6 +743,7 @@ void MainWindow::on_splitter_splitterMoved(int , int )
 
 MainWindow::SavedState MainWindow::saveCurrentState()
 {
+    cout << "SAVING\n\n";
     SavedState saved;
     int index = ui->tabWidget_2->currentIndex();
     saved.main_tree = _main_tree;
@@ -813,14 +814,14 @@ void MainWindow::loadSavedStateFromJson(SavedState saved_state)
         it.second->deleteLater();
     }
     _tab_info.clear();
-    ui->tabWidget_2->clear();
+    ui->tabWidget->clear();
 
     _main_tree = saved_state.main_tree;
 
     for(const auto& it: saved_state.json_states)
     {
         QString tab_name = it.first;
-        _tab_info.insert( {tab_name, createTab(tab_name, ui->tabWidget_2)} );
+        _tab_info.insert( {tab_name, createTab(tab_name, ui->tabWidget)} );
     }
     for(const auto& it: saved_state.json_states)
     {
@@ -831,19 +832,19 @@ void MainWindow::loadSavedStateFromJson(SavedState saved_state)
         container->view()->setSceneRect( saved_state.view_area );
     }
 
-    for (int i=0; i< ui->tabWidget_2->count(); i++)
+    for (int i=0; i< ui->tabWidget->count(); i++)
     {
-        if( ui->tabWidget_2->tabText( i ) == saved_state.current_tab_name)
+        if( ui->tabWidget->tabText( i ) == saved_state.current_tab_name)
         {
-            ui->tabWidget_2->setCurrentIndex(i);
-            ui->tabWidget_2->widget(i)->setFocus();
+            ui->tabWidget->setCurrentIndex(i);
+            ui->tabWidget->widget(i)->setFocus();
         }
-        if( ui->tabWidget_2->tabText(i) == _main_tree)
+        if( ui->tabWidget->tabText(i) == _main_tree)
         {
             onTabSetMainTree(i);
         }
     }
-    if( ui->tabWidget_2->count() == 1 )
+    if( ui->tabWidget->count() == 1 )
     {
         onTabSetMainTree(0);
     }
@@ -940,19 +941,19 @@ void MainWindow::onDestroySubTree(const QString &ID)
         container->nodeReorder();
     }
 
-    for( int index = 0; index < ui->tabWidget_2->count(); index++)
+    for( int index = 0; index < ui->tabWidget->count(); index++)
     {
-        if( ui->tabWidget_2->tabText(index) == ID)
+        if( ui->tabWidget->tabText(index) == ID)
         {
             sub_container->scene()->clearScene();
             sub_container->deleteLater();
-            ui->tabWidget_2->removeTab( index );
+            ui->tabWidget->removeTab( index );
             _tab_info.erase(ID);
             break;
         }
     }
 
-    if( ui->tabWidget_2->count() == 1 )
+    if( ui->tabWidget->count() == 1 )
     {
         onTabSetMainTree(0);
     }
