@@ -50,7 +50,6 @@ MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
                                                                     _current_layout(QtNodes::PortLayout::Vertical)
 {
     ui->setupUi(this);
-    cout << "HI" << endl;
 
     QSettings settings;
     restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
