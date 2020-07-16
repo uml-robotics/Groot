@@ -351,13 +351,13 @@ void MainWindow::loadFromXML(const QString& xml_text)
 
         if( !_main_tree.isEmpty() )
         {
-            for (int i=0; i< ui->tabWidget_2->count(); i++)
+            for (int i=0; i< ui->tabWidget->count(); i++)
             {
-                if( ui->tabWidget_2->tabText( i ) == _main_tree)
+                if( ui->tabWidget->tabText( i ) == _main_tree)
                 {
-                    ui->tabWidget_2->tabBar()->moveTab(i, 0);
-                    ui->tabWidget_2->setCurrentIndex(0);
-                    ui->tabWidget_2->tabBar()->setTabIcon(0, QIcon(":/icons/svg/star.svg"));
+                    ui->tabWidget->tabBar()->moveTab(i, 0);
+                    ui->tabWidget->setCurrentIndex(0);
+                    ui->tabWidget->tabBar()->setTabIcon(0, QIcon(":/icons/svg/star.svg"));
                     break;
                 }
             }
@@ -365,7 +365,7 @@ void MainWindow::loadFromXML(const QString& xml_text)
 
         if( true)
         {
-            createTab("BehaviorTree", ui->tabWidget_2);
+            createTab("BehaviorTree", ui->tabWidget);
             cout << "GREETINGS\n";
             _main_tree = "BehaviorTree";
         }
