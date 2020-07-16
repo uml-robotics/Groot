@@ -1503,7 +1503,7 @@ void MainWindow::onChangeNodesStatus(const QString& bt_name,
 void MainWindow::onTabCustomContextMenuRequested(const QPoint &pos)
 {
     cout << "CUSTOM CONTEXT THINGY\n";
-    int tab_index = ui->tabWidget_2->tabBar()->tabAt( pos );
+    int tab_index = ui->tabWidget->tabBar()->tabAt( pos );
 
     QMenu menu(this);
     QAction* rename   = menu.addAction("Rename");
@@ -1520,7 +1520,7 @@ void MainWindow::onTabCustomContextMenuRequested(const QPoint &pos)
                 onTabSetMainTree(tab_index);
             } );
 
-    QPoint globalPos = ui->tabWidget_2->tabBar()->mapToGlobal(pos);
+    QPoint globalPos = ui->tabWidget->tabBar()->mapToGlobal(pos);
     menu.exec(globalPos);
 }
 
