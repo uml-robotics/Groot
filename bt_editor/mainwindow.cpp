@@ -1585,15 +1585,15 @@ void MainWindow::onTabRenameRequested(int tab_index, QString new_name)
 void MainWindow::onTabSetMainTree(int tab_index)
 {
     cout << "SET MAIN TREE";
-    for (int i=0; i<ui->tabWidget_2->count(); i++ )
+    for (int i=0; i<ui->tabWidget->count(); i++ )
     {
         if( i == tab_index )
         {
-            ui->tabWidget_2->tabBar()->setTabIcon(i, QIcon(":/icons/svg/star.svg") );
-            _main_tree = ui->tabWidget_2->tabBar()->tabText(i);
+            ui->tabWidget->tabBar()->setTabIcon(i, QIcon(":/icons/svg/star.svg") );
+            _main_tree = ui->tabWidget->tabBar()->tabText(i);
         }
         else{
-            ui->tabWidget_2->tabBar()->setTabIcon( i, QIcon());
+            ui->tabWidget->tabBar()->setTabIcon( i, QIcon());
         }
     }
 }
