@@ -366,7 +366,6 @@ void MainWindow::loadFromXML(const QString& xml_text)
         if( true)
         {
             createTab("BehaviorTree", ui->tabWidget);
-            cout << "GREETINGS\n";
             _main_tree = "BehaviorTree";
         }
         else{
@@ -685,6 +684,7 @@ void MainWindow::onSceneChanged()
 
 GraphicContainer* MainWindow::currentTabInfo()
 {
+    cout << "INFOING\n";
     int index = ui->tabWidget_2->currentIndex();
     QString tab_name = ui->tabWidget_2->tabText(index);
     return getTabByName(tab_name);
@@ -1132,6 +1132,7 @@ void MainWindow::clearUndoStacks()
 
 void MainWindow::onCreateAbsBehaviorTree(const AbsBehaviorTree &tree, const QString &bt_name)
 {
+    cout << "CREATING ABS\n";
     auto container = getTabByName(bt_name);
     if( !container )
     {
@@ -1212,6 +1213,7 @@ void MainWindow::onTreeNodeEdited(QString prev_ID, QString new_ID)
 
 void MainWindow::onActionClearTriggered(bool create_new)
 {
+    cout << "CLEARING\n";
     for (auto& it: _tab_info)
     {
         it.second->clearScene();
@@ -1431,6 +1433,7 @@ void MainWindow::on_actionReplay_mode_triggered()
 
 void MainWindow::on_tabWidget_currentChanged(int index)
 {
+    cout << "CURRENT CHANGED\n";
     if( ui->tabWidget_2->count() == 0 )
     {
         return;
@@ -1499,6 +1502,7 @@ void MainWindow::onChangeNodesStatus(const QString& bt_name,
 
 void MainWindow::onTabCustomContextMenuRequested(const QPoint &pos)
 {
+    cout << "CUSTOM CONTEXT THINGY\n";
     int tab_index = ui->tabWidget_2->tabBar()->tabAt( pos );
 
     QMenu menu(this);
@@ -1522,6 +1526,7 @@ void MainWindow::onTabCustomContextMenuRequested(const QPoint &pos)
 
 void MainWindow::onTabRenameRequested(int tab_index, QString new_name)
 {
+    cout << "RENAME\n";
     QString old_name = this->ui->tabWidget_2->tabText(tab_index);
 
     if( new_name.isEmpty())
@@ -1579,6 +1584,7 @@ void MainWindow::onTabRenameRequested(int tab_index, QString new_name)
 
 void MainWindow::onTabSetMainTree(int tab_index)
 {
+    cout << "SET MAIN TREE";
     for (int i=0; i<ui->tabWidget_2->count(); i++ )
     {
         if( i == tab_index )
