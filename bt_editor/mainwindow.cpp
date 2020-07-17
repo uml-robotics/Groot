@@ -71,7 +71,7 @@ void MainWindow::createAbsBehaviorTree(const AbsBehaviorTree &tree, const QStrin
 //    clearUndoStacks();
 }
 
-void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, QTabWidget* target_widget) {
+void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, WidgetData& widget_data) {
     QDomDocument document;
     cout << "LOADING FROM XML\n" << endl;
 
@@ -154,7 +154,7 @@ void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, QT
 //            onCreateAbsBehaviorTree(tree, tree_name);
 //            createAbsBehaviorTree(tree, "left tab", ui->tabWidget);
 //            createAbsBehaviorTree(tree, "right tab", ui->tabWidget_2);
-            createAbsBehaviorTree(tree, name, target_widget);
+            createAbsBehaviorTree(tree, name, widget_data.tabWidget);
         }
 
         if( !_main_tree.isEmpty() )
@@ -595,7 +595,9 @@ void MainWindow::on_actionLoad_triggered()
         xml_text += in.readLine();
     }
 
-    newLoadFromXML(xml_text, "steve", ui->tabWidget_2);
+    WidgetData rightData(ui->tabWidget_2);
+    newLoadFromXML(xml_text, "steve", rightData);
+//    newLoadFromXML(xml_text, "Jedidiah", ui->tabWidget);
 }
 
 QString MainWindow::saveToXML() const

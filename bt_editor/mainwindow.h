@@ -32,6 +32,14 @@ class FlowScene;
 class Node;
 }
 
+struct WidgetData {
+    WidgetData(QTabWidget* target_widget) {
+        this->tabWidget = target_widget;
+    }
+
+    QTabWidget* tabWidget;
+};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -47,7 +55,7 @@ public:
 
     void loadFromXML(const QString &xml_text);
 
-    void newLoadFromXML(const QString &xml_text, const QString &name, QTabWidget* target_widget);
+    void newLoadFromXML(const QString &xml_text, const QString &name, WidgetData& widget_data);
 
     QString saveToXML() const ;
 
