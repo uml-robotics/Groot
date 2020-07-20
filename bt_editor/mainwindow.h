@@ -69,6 +69,8 @@ public:
 
     void createAbsBehaviorTree(const AbsBehaviorTree &tree, const QString &bt_name, QTabWidget * target_widget);
 
+    void newActionClearTriggered(bool create_new, WidgetData& widget_data);
+
 public slots:
 
     void onAutoArrange();

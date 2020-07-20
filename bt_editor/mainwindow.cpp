@@ -132,7 +132,7 @@ void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, Wi
 
         _editor_widget->updateTreeView();
 
-        onActionClearTriggered(false);  //PROBLEM HERE???
+        newActionClearTriggered(false, widget_data); 
 
         const QSignalBlocker blocker( currentTabInfo() );
 
@@ -600,7 +600,7 @@ void MainWindow::on_actionLoad_triggered()
 
     cout << "LOADING 2ND ONE" << endl;
     WidgetData leftData(ui->tabWidget);
-    newLoadFromXML(xml_text, "Jedidiah", leftData);
+//    newLoadFromXML(xml_text, "Jedidiah", leftData);
 }
 
 QString MainWindow::saveToXML() const
@@ -1304,7 +1304,7 @@ void MainWindow::clearUndoStacks()
 
 void MainWindow::onCreateAbsBehaviorTree(const AbsBehaviorTree &tree, const QString &bt_name)
 {
-    cout << "CREATING ABS" << endl;
+    cout << "LAME creating abs" << endl;
     auto container = getTabByName(bt_name);
     auto container2 = getTabByName(bt_name);
     if( !container )
@@ -1389,10 +1389,33 @@ void MainWindow::onTreeNodeEdited(QString prev_ID, QString new_ID)
     }
 }
 
+void MainWindow::newActionClearTriggered(bool create_new, WidgetData& widget_data) {
+    cout << "NEW CLEARING" << endl;
+    for (auto& it: _tab_info)
+    {
+        it.second->clearScene();
+        it.second->deleteLater();
+    }
+    _tab_info.clear();
+
+    widget_data.tabWidget->clear();
+    if( create_new )
+    {
+        cout << "making ONE new tab" << endl;
+        createTab("BehaviorTreeEEE", widget_data.tabWidget);
+    }
+
+    _editor_widget->clear();
+    _replay_widget->clear();
+#ifdef ZMQ_FOUND
+    _monitor_widget->clear();
+#endif
+
+}
 
 void MainWindow::onActionClearTriggered(bool create_new)
 {
-    cout << "CLEARING" << endl;
+    cout << "LAME clearing" << endl;
     for (auto& it: _tab_info)
     {
         it.second->clearScene();
@@ -1613,10 +1636,10 @@ void MainWindow::on_actionReplay_mode_triggered()
 
 void MainWindow::on_tabWidget_currentChanged(int index)
 {
-    cout << "CURRENT CHANGED" << endl;
+    cout << "current changed" << endl;
     if( ui->tabWidget_2->count() == 0 )
     {
-        cout << "RETURNING" << endl;
+        cout << "tabwidget_2 has no tabs" << endl;
         return;
     }
     QString tab_name = ui->tabWidget_2->tabText(index);
