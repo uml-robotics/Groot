@@ -75,6 +75,8 @@ public:
 
     void newOnSceneChanged(WidgetData& widget_data);
 
+    void newOnPushUndo(WidgetData& widget_data);
+
 public slots:
 
     void onAutoArrange();
@@ -207,8 +209,11 @@ private:
 #ifdef ZMQ_FOUND
     SidepanelMonitor* _monitor_widget;
 #endif
-    
+
+    MainWindow::SavedState newSaveCurrentState(WidgetData& widget_data);
+
     MainWindow::SavedState saveCurrentState();
+
     void clearUndoStacks();
 };
 

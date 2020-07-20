@@ -203,7 +203,7 @@ void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, Wi
     }
     else{
         newOnSceneChanged(widget_data);
-        onPushUndo();
+        newOnPushUndo(widget_data);
     }
 }
 
@@ -946,9 +946,27 @@ void MainWindow::on_splitter_splitterMoved(int , int )
     }
 }
 
+MainWindow::SavedState MainWindow::newSaveCurrentState(WidgetData& widget_data){
+    cout << "saving\n" << endl;
+    SavedState saved;
+    int index = widget_data.tabWidget->currentIndex();
+    saved.main_tree = _main_tree;
+    saved.current_tab_name = widget_data.tabWidget->tabText(index);
+    auto current_view = getTabByName( saved.current_tab_name )->view();
+    saved.view_transform = current_view->transform();
+    saved.view_area = current_view->sceneRect();
+
+    for (auto& it: _tab_info)
+    {
+        saved.json_states[it.first] = it.second->scene()->saveToMemory();
+    }
+    return saved;
+}
+
+
 MainWindow::SavedState MainWindow::saveCurrentState()
 {
-    cout << "SAVING\n" << endl;
+    cout << "LAME saving\n" << endl;
     SavedState saved;
     int index = ui->tabWidget_2->currentIndex();
     saved.main_tree = _main_tree;
@@ -963,6 +981,20 @@ MainWindow::SavedState MainWindow::saveCurrentState()
     }
     return saved;
 }
+
+void MainWindow::newOnPushUndo(WidgetData& widget_data){
+    SavedState saved = newSaveCurrentState(widget_data);
+
+    if( _undo_stack.empty() || ( saved != _current_state &&  _undo_stack.back() != _current_state) )
+    {
+        _undo_stack.push_back( std::move(_current_state) );
+        _redo_stack.clear();
+    }
+    _current_state = saved;
+
+    //qDebug() << "P: Undo size: " << _undo_stack.size() << " Redo size: " << _redo_stack.size();
+}
+
 
 void MainWindow::onPushUndo()
 {
