@@ -134,7 +134,7 @@ void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, Wi
 
         newActionClearTriggered(false, widget_data); 
 
-        const QSignalBlocker blocker( currentTabInfo() );
+        const QSignalBlocker blocker( newTabInfo(widget_data) );
 
         for (auto bt_root = document_root.firstChildElement("BehaviorTree");
              !bt_root.isNull();
@@ -177,7 +177,7 @@ void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, Wi
             _main_tree = "BehaviorTree";
         }
         else{
-            currentTabInfo()->nodeReorder();
+            newTabInfo(widget_data)->nodeReorder();
         }
         auto models_to_remove = GetModelsToRemove(this, _treenode_models, custom_models);
 
@@ -202,7 +202,7 @@ void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, Wi
                              QMessageBox::Ok);
     }
     else{
-        onSceneChanged();
+        newOnSceneChanged(widget_data);
         onPushUndo();
     }
 }
@@ -600,7 +600,7 @@ void MainWindow::on_actionLoad_triggered()
 
     cout << "LOADING 2ND ONE" << endl;
     WidgetData leftData(ui->tabWidget);
-//    newLoadFromXML(xml_text, "Jedidiah", leftData);
+    newLoadFromXML(xml_text, "Jedidiah", leftData);
 }
 
 QString MainWindow::saveToXML() const
@@ -826,6 +826,32 @@ void MainWindow::onAutoArrange()
     currentTabInfo()->nodeReorder();
 }
 
+void MainWindow::newOnSceneChanged(WidgetData& widget_data) {
+    cout << "onSceneChanged" << endl;
+    const bool valid_BT = newTabInfo(widget_data)->containsValidTree();
+
+    ui->toolButtonLayout->setEnabled(valid_BT);
+    ui->toolButtonReorder->setEnabled(valid_BT);
+    ui->toolButtonReorder->setEnabled(valid_BT);
+
+    ui->actionSave->setEnabled(valid_BT);
+    QPixmap pix;
+
+    if(valid_BT)
+    {
+        pix.load(":/icons/green-circle.png");
+        ui->labelSemaphore->setToolTip("Valid Tree");
+    }
+    else{
+        pix.load(":/icons/red-circle.png");
+        ui->labelSemaphore->setToolTip("NOT a valid Tree");
+    }
+    ui->labelSemaphore->setPixmap(pix);
+    ui->labelSemaphore->setScaledContents(true);
+
+    lockEditing( _current_mode != GraphicMode::EDITOR );
+}
+
 void MainWindow::onSceneChanged()
 {
     cout << "onSceneChanged" << endl;
@@ -853,10 +879,17 @@ void MainWindow::onSceneChanged()
     lockEditing( _current_mode != GraphicMode::EDITOR );
 }
 
+GraphicContainer* MainWindow::newTabInfo(WidgetData& widget_data)
+{
+    cout << "info" << endl;
+    int index = widget_data.tabWidget->currentIndex();
+    QString tab_name = widget_data.tabWidget->tabText(index);
+    return getTabByName(tab_name);
+}
 
 GraphicContainer* MainWindow::currentTabInfo()
 {
-    cout << "INFOING" << endl;
+    cout << "LAME info" << endl;
     int index = ui->tabWidget_2->currentIndex();
     QString tab_name = ui->tabWidget_2->tabText(index);
     return getTabByName(tab_name);

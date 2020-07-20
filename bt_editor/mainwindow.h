@@ -71,6 +71,10 @@ public:
 
     void newActionClearTriggered(bool create_new, WidgetData& widget_data);
 
+    GraphicContainer* newTabInfo(WidgetData& widget_data);
+
+    void newOnSceneChanged(WidgetData& widget_data);
+
 public slots:
 
     void onAutoArrange();
