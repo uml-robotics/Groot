@@ -47,11 +47,11 @@ using std::endl;
 
 void MainWindow::createAbsBehaviorTree(const AbsBehaviorTree &tree, const QString &bt_name, QTabWidget * target_widget)
 {
-    cout << "CREATING ABS FANCILY\n";
+    cout << "CREATING ABS FANCILY" << endl;
     auto container = getTabByName(bt_name);
     if( !container )
     {
-        cout << "MAKING NEW TABS\n";
+        cout << "MAKING NEW TABS" << endl;
         container = createTab(bt_name, target_widget);
     }
     const QSignalBlocker blocker( container );
@@ -132,7 +132,7 @@ void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, Wi
 
         _editor_widget->updateTreeView();
 
-        onActionClearTriggered(false);
+        onActionClearTriggered(false);  //PROBLEM HERE???
 
         const QSignalBlocker blocker( currentTabInfo() );
 
@@ -597,7 +597,10 @@ void MainWindow::on_actionLoad_triggered()
 
     WidgetData rightData(ui->tabWidget_2);
     newLoadFromXML(xml_text, "steve", rightData);
-//    newLoadFromXML(xml_text, "Jedidiah", ui->tabWidget);
+
+    cout << "LOADING 2ND ONE" << endl;
+    WidgetData leftData(ui->tabWidget);
+    newLoadFromXML(xml_text, "Jedidiah", leftData);
 }
 
 QString MainWindow::saveToXML() const
@@ -825,6 +828,7 @@ void MainWindow::onAutoArrange()
 
 void MainWindow::onSceneChanged()
 {
+    cout << "onSceneChanged" << endl;
     const bool valid_BT = currentTabInfo()->containsValidTree();
 
     ui->toolButtonLayout->setEnabled(valid_BT);
@@ -852,7 +856,7 @@ void MainWindow::onSceneChanged()
 
 GraphicContainer* MainWindow::currentTabInfo()
 {
-    cout << "INFOING\n";
+    cout << "INFOING" << endl;
     int index = ui->tabWidget_2->currentIndex();
     QString tab_name = ui->tabWidget_2->tabText(index);
     return getTabByName(tab_name);
@@ -911,7 +915,7 @@ void MainWindow::on_splitter_splitterMoved(int , int )
 
 MainWindow::SavedState MainWindow::saveCurrentState()
 {
-    cout << "SAVING\n\n";
+    cout << "SAVING\n" << endl;
     SavedState saved;
     int index = ui->tabWidget_2->currentIndex();
     saved.main_tree = _main_tree;
@@ -1300,12 +1304,12 @@ void MainWindow::clearUndoStacks()
 
 void MainWindow::onCreateAbsBehaviorTree(const AbsBehaviorTree &tree, const QString &bt_name)
 {
-    cout << "CREATING ABS\n";
+    cout << "CREATING ABS" << endl;
     auto container = getTabByName(bt_name);
     auto container2 = getTabByName(bt_name);
     if( !container )
     {
-        cout << "MAKING NEW TABS\n";
+        cout << "MAKING NEW TABS" << endl;
         container = createTab("left tab", ui->tabWidget);
         container2 = createTab("right tab", ui->tabWidget_2);
     }
@@ -1388,7 +1392,7 @@ void MainWindow::onTreeNodeEdited(QString prev_ID, QString new_ID)
 
 void MainWindow::onActionClearTriggered(bool create_new)
 {
-    cout << "CLEARING\n";
+    cout << "CLEARING" << endl;
     for (auto& it: _tab_info)
     {
         it.second->clearScene();
@@ -1399,7 +1403,8 @@ void MainWindow::onActionClearTriggered(bool create_new)
     ui->tabWidget_2->clear();
     if( create_new )
     {
-        createTab("BehaviorTree", ui->tabWidget);
+        cout << "making ONE new tab" << endl;
+        createTab("BehaviorTreeEEE", ui->tabWidget);
     }
 
     _editor_widget->clear();
@@ -1608,10 +1613,10 @@ void MainWindow::on_actionReplay_mode_triggered()
 
 void MainWindow::on_tabWidget_currentChanged(int index)
 {
-    cout << "CURRENT CHANGED\n";
+    cout << "CURRENT CHANGED" << endl;
     if( ui->tabWidget_2->count() == 0 )
     {
-        cout << "RETURNING\n";
+        cout << "RETURNING" << endl;
         return;
     }
     QString tab_name = ui->tabWidget_2->tabText(index);
@@ -1678,7 +1683,7 @@ void MainWindow::onChangeNodesStatus(const QString& bt_name,
 
 void MainWindow::onTabCustomContextMenuRequested(const QPoint &pos)
 {
-    cout << "CUSTOM CONTEXT THINGY\n";
+    cout << "CUSTOM CONTEXT THINGY" << endl;
     int tab_index = ui->tabWidget->tabBar()->tabAt( pos );
 
     QMenu menu(this);
@@ -1702,7 +1707,7 @@ void MainWindow::onTabCustomContextMenuRequested(const QPoint &pos)
 
 void MainWindow::onTabRenameRequested(int tab_index, QString new_name)
 {
-    cout << "RENAME\n";
+    cout << "RENAME" << endl;
     QString old_name = this->ui->tabWidget->tabText(tab_index);
 
     if( new_name.isEmpty())
@@ -1760,7 +1765,7 @@ void MainWindow::onTabRenameRequested(int tab_index, QString new_name)
 
 void MainWindow::onTabSetMainTree(int tab_index)
 {
-    cout << "SET MAIN TREE\n";
+    cout << "SET MAIN TREE" << endl;
     for (int i=0; i<ui->tabWidget->count(); i++ )
     {
         if( i == tab_index )
