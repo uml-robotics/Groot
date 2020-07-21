@@ -53,7 +53,7 @@ void MainWindow::createAbsBehaviorTree(const AbsBehaviorTree &tree, const QStrin
     auto container = getTabByName(bt_name);
     if( !container )
     {
-        cout << "MAKING NEW TABS" << endl;
+//        cout << "MAKING NEW TABS" << endl;
         container = createTab(bt_name, target_widget);
     }
     const QSignalBlocker blocker( container );
@@ -133,6 +133,7 @@ void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, Wi
     for (auto bt_root = document_root.firstChildElement("BehaviorTree");
          !bt_root.isNull();
          bt_root = bt_root.nextSiblingElement("BehaviorTree")) {
+
         auto tree = BuildTreeFromXML(bt_root, _treenode_models);
         QString tree_name("BehaviorTree");
 
@@ -149,39 +150,43 @@ void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, Wi
         createAbsBehaviorTree(tree, name, widget_data.tabWidget);
     }
 
-    if (!_main_tree.isEmpty()) {
-        for (int i = 0; i < ui->tabWidget->count(); i++) {
-            if (ui->tabWidget->tabText(i) == _main_tree) {
-                ui->tabWidget->tabBar()->moveTab(i, 0);
-                ui->tabWidget->setCurrentIndex(0);
-                ui->tabWidget->tabBar()->setTabIcon(0, QIcon(":/icons/svg/star.svg"));
-                break;
+    if (name == "steve") { cout << "'Tis Steve" << endl;
+        if (!_main_tree.isEmpty()) {
+            for (int i = 0; i < ui->tabWidget->count(); i++) {
+                if (ui->tabWidget->tabText(i) == _main_tree) {
+                    ui->tabWidget->tabBar()->moveTab(i, 0);
+                    ui->tabWidget->setCurrentIndex(0);
+                    ui->tabWidget->tabBar()->setTabIcon(0, QIcon(":/icons/svg/star.svg"));
+                    break;
+                }
             }
         }
-    }
 
-    if (currentTabInfo() == nullptr) {
-        createTab("BehaviorTree", ui->tabWidget);
-        _main_tree = "BehaviorTree";
+        if (currentTabInfo() == nullptr) {
+            createTab("BehaviorTree", ui->tabWidget);
+            _main_tree = "BehaviorTree";
+        } else {
+            newTabInfo(widget_data)->nodeReorder();
+        }
+        auto models_to_remove = GetModelsToRemove(this, _treenode_models, custom_models);
+
+        for (QString model_name: models_to_remove) {
+            onModelRemoveRequested(model_name);
+        }
+
+        if (error) {
+            _treenode_models = prev_tree_model;
+            loadSavedStateFromJson(saved_state);
+            qDebug() << "R: Undo size: " << _undo_stack.size() << " Redo size: " << _redo_stack.size();
+            QMessageBox::warning(this, tr("Exception!"),
+                                 tr("It was not possible to parse the file. Error:\n\n%1").arg(err_message),
+                                 QMessageBox::Ok);
+        } else {
+            newOnSceneChanged(widget_data);
+            newOnPushUndo(widget_data);
+        }
     } else {
-        newTabInfo(widget_data)->nodeReorder();
-    }
-    auto models_to_remove = GetModelsToRemove(this, _treenode_models, custom_models);
-
-    for (QString model_name: models_to_remove) {
-        onModelRemoveRequested(model_name);
-    }
-
-    if (error) {
-        _treenode_models = prev_tree_model;
-        loadSavedStateFromJson(saved_state);
-        qDebug() << "R: Undo size: " << _undo_stack.size() << " Redo size: " << _redo_stack.size();
-        QMessageBox::warning(this, tr("Exception!"),
-                             tr("It was not possible to parse the file. Error:\n\n%1").arg(err_message),
-                             QMessageBox::Ok);
-    } else {
-        newOnSceneChanged(widget_data);
-        newOnPushUndo(widget_data);
+        cout << "NOT STEVE" << endl;
     }
 }
 
@@ -802,7 +807,7 @@ void MainWindow::onAutoArrange()
 }
 
 void MainWindow::newOnSceneChanged(WidgetData& widget_data) {
-    cout << "onSceneChanged" << endl;
+//    cout << "onSceneChanged" << endl;
     const bool valid_BT = newTabInfo(widget_data)->containsValidTree();
 
     ui->toolButtonLayout->setEnabled(valid_BT);
@@ -856,7 +861,7 @@ void MainWindow::onSceneChanged()
 
 GraphicContainer* MainWindow::newTabInfo(WidgetData& widget_data)
 {
-    cout << "info" << endl;
+//    cout << "info" << endl;
     int index = widget_data.tabWidget->currentIndex();
     QString tab_name = widget_data.tabWidget->tabText(index);
     return getTabByName(tab_name);
@@ -1677,7 +1682,7 @@ void MainWindow::on_actionReplay_mode_triggered()
 
 void MainWindow::on_tabWidget_currentChanged(int index)
 {
-    cout << "current changed" << endl;
+//    cout << "current changed" << endl;
     if( ui->tabWidget_2->count() == 0 )
     {
         cout << "tabwidget_2 has no tabs" << endl;
