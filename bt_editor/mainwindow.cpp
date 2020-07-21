@@ -110,9 +110,11 @@ void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, Wi
 
     auto document_root = document.documentElement();
 
+
     if (document_root.hasAttribute("main_tree_to_execute")) {
         _main_tree = document_root.attribute("main_tree_to_execute");
     }
+
 
     auto custom_models = ReadTreeNodesModel(document_root);
 
@@ -122,12 +124,10 @@ void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, Wi
 
     _editor_widget->updateTreeView();
 
+
     newActionClearTriggered(false, widget_data);
 
     const QSignalBlocker blocker(newTabInfo(widget_data));
-
-    cout << "\n'Tis Steve\n" << endl;
-
 
     for (auto bt_root = document_root.firstChildElement("BehaviorTree");
          !bt_root.isNull();
@@ -149,46 +149,41 @@ void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, Wi
         createAbsBehaviorTree(tree, name, widget_data.tabWidget);
     }
 
-    if (name == "steve") {
-
-
-        if (!_main_tree.isEmpty()) {
-            for (int i = 0; i < ui->tabWidget->count(); i++) {
-                if (ui->tabWidget->tabText(i) == _main_tree) {
-                    ui->tabWidget->tabBar()->moveTab(i, 0);
-                    ui->tabWidget->setCurrentIndex(0);
-                    ui->tabWidget->tabBar()->setTabIcon(0, QIcon(":/icons/svg/star.svg"));
-                    break;
-                }
+    if (!_main_tree.isEmpty()) {
+        for (int i = 0; i < ui->tabWidget->count(); i++) {
+            if (ui->tabWidget->tabText(i) == _main_tree) {
+                ui->tabWidget->tabBar()->moveTab(i, 0);
+                ui->tabWidget->setCurrentIndex(0);
+                ui->tabWidget->tabBar()->setTabIcon(0, QIcon(":/icons/svg/star.svg"));
+                break;
             }
         }
-
-        if (currentTabInfo() == nullptr) {
-            createTab("BehaviorTree", ui->tabWidget);
-            _main_tree = "BehaviorTree";
-        } else {
-            newTabInfo(widget_data)->nodeReorder();
-        }
-        auto models_to_remove = GetModelsToRemove(this, _treenode_models, custom_models);
-
-        for (QString model_name: models_to_remove) {
-            onModelRemoveRequested(model_name);
-        }
-
-        if (error) {
-            _treenode_models = prev_tree_model;
-            loadSavedStateFromJson(saved_state);
-            qDebug() << "R: Undo size: " << _undo_stack.size() << " Redo size: " << _redo_stack.size();
-            QMessageBox::warning(this, tr("Exception!"),
-                                 tr("It was not possible to parse the file. Error:\n\n%1").arg(err_message),
-                                 QMessageBox::Ok);
-        } else {
-            newOnSceneChanged(widget_data);
-            newOnPushUndo(widget_data);
-        }
-    } else {
-        cout << "NOT STEVE" << endl;
     }
+
+    if (currentTabInfo() == nullptr) {
+        createTab("BehaviorTree", ui->tabWidget);
+        _main_tree = "BehaviorTree";
+    } else {
+        newTabInfo(widget_data)->nodeReorder();
+    }
+    auto models_to_remove = GetModelsToRemove(this, _treenode_models, custom_models);
+
+    for (QString model_name: models_to_remove) {
+        onModelRemoveRequested(model_name);
+    }
+
+    if (error) {
+        _treenode_models = prev_tree_model;
+        loadSavedStateFromJson(saved_state);
+        qDebug() << "R: Undo size: " << _undo_stack.size() << " Redo size: " << _redo_stack.size();
+        QMessageBox::warning(this, tr("Exception!"),
+                             tr("It was not possible to parse the file. Error:\n\n%1").arg(err_message),
+                             QMessageBox::Ok);
+    } else {
+        newOnSceneChanged(widget_data);
+        newOnPushUndo(widget_data);
+    }
+
 }
 
 MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
@@ -1285,7 +1280,7 @@ void MainWindow::onTreeNodeEdited(QString prev_ID, QString new_ID) {
 void MainWindow::newActionClearTriggered(bool create_new, WidgetData &widget_data) {
     cout << "NEW CLEARING" << endl;
     for (auto &it: _tab_info) {
-        it.second->clearScene();
+//        it.second->clearScene();
         it.second->deleteLater();
     }
     _tab_info.clear();
