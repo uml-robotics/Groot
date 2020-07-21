@@ -511,26 +511,22 @@ void MainWindow::loadFromXML(const QString &xml_text) {
     }
 }
 
-
-void MainWindow::on_actionLoad_triggered() {
+QString get_XML_from_file(QString fileName) {
     QSettings settings;
-    QString directory_path = settings.value("MainWindow.lastLoadDirectory",
-                                            QDir::homePath()).toString();
 
-    QString fileName = QFileDialog::getOpenFileName(this,
-                                                    tr("Load BehaviorTree from file"), directory_path,
-                                                    tr("BehaviorTree files (*.xml)"));
     if (!QFileInfo::exists(fileName)) {
-        return;
+        cout << "FILE DOESN'T EXITS";
+        exit(42);
     }
 
     QFile file(fileName);
 
     if (!file.open(QIODevice::ReadOnly)) {
-        return;
+        cout << "FAIL" << endl;
+        exit(43);
     }
 
-    directory_path = QFileInfo(fileName).absolutePath();
+    QString directory_path = QFileInfo(fileName).absolutePath();
     settings.setValue("MainWindow.lastLoadDirectory", directory_path);
     settings.sync();
 
@@ -540,6 +536,20 @@ void MainWindow::on_actionLoad_triggered() {
     while (!in.atEnd()) {
         xml_text += in.readLine();
     }
+
+    return xml_text;
+}
+
+void MainWindow::on_actionLoad_triggered() {
+    QSettings settings;
+    QString directory_path = settings.value("MainWindow.lastLoadDirectory",
+                                            QDir::homePath()).toString();
+
+    QString fileName = QFileDialog::getOpenFileName(this,
+                                                    tr("Load BehaviorTree from file"), directory_path,
+                                                    tr("BehaviorTree files (*.xml)"));
+
+    QString xml_text = get_XML_from_file(fileName);
 
     WidgetData rightData(ui->tabWidget_2);
     newLoadFromXML(xml_text, "steve", rightData);
