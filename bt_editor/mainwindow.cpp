@@ -766,15 +766,7 @@ void MainWindow::newOnPushUndo(WidgetData &widget_data) {
 
 
 void MainWindow::onPushUndo() {
-    SavedState saved = saveCurrentState();
-
-    if (_undo_stack.empty() || (saved != _current_state && _undo_stack.back() != _current_state)) {
-        _undo_stack.push_back(std::move(_current_state));
-        _redo_stack.clear();
-    }
-    _current_state = saved;
-
-    //qDebug() << "P: Undo size: " << _undo_stack.size() << " Redo size: " << _redo_stack.size();
+    newOnPushUndo(rightData);
 }
 
 void MainWindow::onUndoInvoked() {
