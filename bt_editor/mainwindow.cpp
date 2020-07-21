@@ -748,18 +748,7 @@ MainWindow::SavedState MainWindow::newSaveCurrentState(WidgetData &widget_data) 
 
 MainWindow::SavedState MainWindow::saveCurrentState() {
     cout << "LAME saving\n" << endl;
-    SavedState saved;
-    int index = ui->tabWidget_2->currentIndex();
-    saved.main_tree = _main_tree;
-    saved.current_tab_name = ui->tabWidget_2->tabText(index);
-    auto current_view = getTabByName(saved.current_tab_name)->view();
-    saved.view_transform = current_view->transform();
-    saved.view_area = current_view->sceneRect();
-
-    for (auto &it: _tab_info) {
-        saved.json_states[it.first] = it.second->scene()->saveToMemory();
-    }
-    return saved;
+    return newSaveCurrentState(rightData);
 }
 
 void MainWindow::newOnPushUndo(WidgetData &widget_data) {
