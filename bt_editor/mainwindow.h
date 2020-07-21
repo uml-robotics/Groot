@@ -215,6 +215,10 @@ private:
     MainWindow::SavedState saveCurrentState();
 
     void clearUndoStacks();
+
+    WidgetData leftData;
+
+    WidgetData rightData;
 };
 
 

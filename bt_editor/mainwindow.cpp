@@ -190,7 +190,9 @@ MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
         QMainWindow(parent),
         ui(new Ui::MainWindow),
         _current_mode(initial_mode),
-        _current_layout(QtNodes::PortLayout::Vertical) {
+        _current_layout(QtNodes::PortLayout::Vertical),
+        leftData(ui->tabWidget),
+        rightData(ui->tabWidget_2){
     ui->setupUi(this);
 
     QSettings settings;
@@ -551,14 +553,14 @@ void MainWindow::on_actionLoad_triggered() {
 
     QString rightFile = directory_path + "/modded_tree.xml";
     QString right_xml_text = get_XML_from_file(rightFile);
-    WidgetData rightData(ui->tabWidget_2);
+    rightData = WidgetData(ui->tabWidget_2);
     newLoadFromXML(right_xml_text, "steve", rightData);
 
     cout << "LOADING 2ND ONE" << endl;
 
     QString leftFile = directory_path + "/generated_tree.xml";
     QString left_xml_text = get_XML_from_file(leftFile);
-    WidgetData leftData(ui->tabWidget);
+    leftData = WidgetData(ui->tabWidget);
     newLoadFromXML(left_xml_text, "Jedidiah", leftData);
 }
 
