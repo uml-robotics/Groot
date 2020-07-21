@@ -132,7 +132,7 @@ void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, Wi
 
         _editor_widget->updateTreeView();
 
-        newActionClearTriggered(false, widget_data); 
+        newActionClearTriggered(false, widget_data);
 
         const QSignalBlocker blocker( newTabInfo(widget_data) );
 
@@ -316,7 +316,7 @@ MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
     {
         if (prev_ID == new_ID)
             return;
-            
+
         for (int index = 0; index < ui->tabWidget->count(); index++)
         {
             if( ui->tabWidget->tabText(index) == prev_ID)
@@ -678,40 +678,37 @@ QString MainWindow::saveToXML() const
     return xmlDocumentToString(doc);
 }
 
-QString MainWindow::xmlDocumentToString(const QDomDocument &document) const
-{
-  QString output_string;
+QString MainWindow::xmlDocumentToString(const QDomDocument &document) const {
+    QString output_string;
 
-  QXmlStreamWriter stream(&output_string);
+    QXmlStreamWriter stream(&output_string);
 
-  stream.setAutoFormatting(true);
-  stream.setAutoFormattingIndent(4);
+    stream.setAutoFormatting(true);
+    stream.setAutoFormattingIndent(4);
 
-  stream.writeStartDocument();
+    stream.writeStartDocument();
 
-  auto root_element = document.documentElement();
+    auto root_element = document.documentElement();
 
-  stream.writeStartElement(root_element.tagName());
+    stream.writeStartElement(root_element.tagName());
 
-  streamElementAttributes(stream, root_element);
+    streamElementAttributes(stream, root_element);
 
-  auto next_node = root_element.firstChild();
+    auto next_node = root_element.firstChild();
 
-  while ( !next_node.isNull() )
-  {
-    recursivelySaveNodeCanonically(stream, next_node);
+    while (!next_node.isNull()) {
+        recursivelySaveNodeCanonically(stream, next_node);
 
-    if ( stream.hasError() )
-    {
-        break;
+        if (stream.hasError()) {
+            break;
+        }
+        next_node = next_node.nextSibling();
     }
-    next_node = next_node.nextSibling();
-  }
 
-  stream.writeEndElement();
-  stream.writeEndDocument();
+    stream.writeEndElement();
+    stream.writeEndDocument();
 
-  return output_string;
+    return output_string;
 }
 
 void MainWindow::streamElementAttributes(QXmlStreamWriter &stream, const QDomElement &element) const
