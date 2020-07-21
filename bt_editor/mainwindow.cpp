@@ -545,11 +545,12 @@ void MainWindow::on_actionLoad_triggered() {
     QString directory_path = settings.value("MainWindow.lastLoadDirectory",
                                             QDir::homePath()).toString();
 
-    QString fileName = QFileDialog::getOpenFileName(this,
-                                                    tr("Load BehaviorTree from file"), directory_path,
-                                                    tr("BehaviorTree files (*.xml)"));
+//    QString fileName = QFileDialog::getOpenFileName(this,
+//                                                    tr("Load BehaviorTree from file"), directory_path,
+//                                                    tr("BehaviorTree files (*.xml)"));
+    QString leftFile = directory_path + "/generated_tree.xml";
 
-    QString xml_text = get_XML_from_file(fileName);
+    QString xml_text = get_XML_from_file(leftFile);
 
     WidgetData rightData(ui->tabWidget_2);
     newLoadFromXML(xml_text, "steve", rightData);
