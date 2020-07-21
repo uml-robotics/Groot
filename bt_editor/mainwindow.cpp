@@ -330,9 +330,15 @@ MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
     createTab("BehaviorTree", ui->tabWidget);
     createTab("anotherTree", ui->tabWidget_2);
 
+    // NEEDS TO BE BEFORE onSceneChanged() ========================================
+    leftData = WidgetData(ui->tabWidget);
+    rightData = WidgetData(ui->tabWidget_2);
+
     onTabSetMainTree(0);
     onSceneChanged();
     _current_state = saveCurrentState();
+
+
 }
 
 
@@ -440,14 +446,12 @@ void MainWindow::on_actionLoad_triggered() {
 
     QString rightFile = directory_path + "/modded_tree.xml";
     QString right_xml_text = get_XML_from_file(rightFile);
-    rightData = WidgetData(ui->tabWidget_2);
     newLoadFromXML(right_xml_text, "steve", rightData);
 
     cout << "LOADING 2ND ONE" << endl;
 
     QString leftFile = directory_path + "/generated_tree.xml";
     QString left_xml_text = get_XML_from_file(leftFile);
-    leftData = WidgetData(ui->tabWidget);
     newLoadFromXML(left_xml_text, "Jedidiah", leftData);
 }
 
@@ -668,7 +672,7 @@ void MainWindow::newOnSceneChanged(WidgetData &widget_data) {
 }
 
 void MainWindow::onSceneChanged() {
-    cout << "onSceneChanged" << endl;
+    cout << "LAME onSceneChanged" << endl;
     const bool valid_BT = currentTabInfo()->containsValidTree();
 
     ui->toolButtonLayout->setEnabled(valid_BT);
@@ -700,9 +704,7 @@ GraphicContainer *MainWindow::newTabInfo(WidgetData &widget_data) {
 
 GraphicContainer *MainWindow::currentTabInfo() {
     cout << "LAME info" << endl;
-    int index = ui->tabWidget_2->currentIndex();
-    QString tab_name = ui->tabWidget_2->tabText(index);
-    return getTabByName(tab_name);
+    return newTabInfo(rightData);
 }
 
 GraphicContainer *MainWindow::getTabByName(const QString &tab_name) {
