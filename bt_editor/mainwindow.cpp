@@ -32,6 +32,8 @@
 #include <iostream>
 #include <cstdlib>
 #include <string>
+#include <unistd.h>
+
 
 #include "utils.h"
 
@@ -71,40 +73,35 @@ void MainWindow::createAbsBehaviorTree(const AbsBehaviorTree &tree, const QStrin
 //    clearUndoStacks();
 }
 
-void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, WidgetData& widget_data) {
+void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, WidgetData &widget_data) {
     QDomDocument document;
     cout << "LOADING FROM XML\n" << endl;
 
-    try{
+    try {
         QString errorMsg;
         int errorLine;
-        if( ! document.setContent(xml_text, &errorMsg, &errorLine ) )
-        {
-            throw std::runtime_error( tr("Error parsing XML (line %1): %2").arg(errorLine).arg(errorMsg).toStdString() );
+        if (!document.setContent(xml_text, &errorMsg, &errorLine)) {
+            throw std::runtime_error(tr("Error parsing XML (line %1): %2").arg(errorLine).arg(errorMsg).toStdString());
         }
         //---------------
         std::vector<QString> registered_ID;
-        for (const auto& it: _treenode_models)
-        {
-            registered_ID.push_back( it.first );
+        for (const auto &it: _treenode_models) {
+            registered_ID.push_back(it.first);
         }
         std::vector<QString> error_messages;
-        bool done = VerifyXML(document, registered_ID, error_messages );
+        bool done = VerifyXML(document, registered_ID, error_messages);
 
-        if( !done )
-        {
+        if (!done) {
             QString merged_error;
-            for (const auto& err: error_messages)
-            {
+            for (const auto &err: error_messages) {
                 merged_error += err + "\n";
             }
-            throw std::runtime_error( merged_error.toStdString() );
+            throw std::runtime_error(merged_error.toStdString());
         }
     }
-    catch( std::runtime_error& err)
-    {
+    catch (std::runtime_error &err) {
         QMessageBox messageBox;
-        messageBox.critical(this,"Error parsing the XML", err.what() );
+        messageBox.critical(this, "Error parsing the XML", err.what());
         messageBox.show();
         return;
     }
@@ -115,93 +112,74 @@ void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, Wi
     auto saved_state = _current_state;
     auto prev_tree_model = _treenode_models;
 
-    try {
-        auto document_root = document.documentElement();
+    auto document_root = document.documentElement();
 
-        if( document_root.hasAttribute("main_tree_to_execute"))
-        {
-            _main_tree = document_root.attribute("main_tree_to_execute");
-        }
+    if (document_root.hasAttribute("main_tree_to_execute")) {
+        _main_tree = document_root.attribute("main_tree_to_execute");
+    }
 
-        auto custom_models = ReadTreeNodesModel( document_root );
+    auto custom_models = ReadTreeNodesModel(document_root);
 
-        for( const auto& model: custom_models)
-        {
-            onAddToModelRegistry( model.second );
-        }
+    for (const auto &model: custom_models) {
+        onAddToModelRegistry(model.second);
+    }
 
-        _editor_widget->updateTreeView();
+    _editor_widget->updateTreeView();
 
-        newActionClearTriggered(false, widget_data);
+    newActionClearTriggered(false, widget_data);
 
-        const QSignalBlocker blocker( newTabInfo(widget_data) );
+    const QSignalBlocker blocker(newTabInfo(widget_data));
 
-        for (auto bt_root = document_root.firstChildElement("BehaviorTree");
-             !bt_root.isNull();
-             bt_root = bt_root.nextSiblingElement("BehaviorTree"))
-        {
-            auto tree = BuildTreeFromXML( bt_root, _treenode_models );
-            QString tree_name("BehaviorTree");
+    for (auto bt_root = document_root.firstChildElement("BehaviorTree");
+         !bt_root.isNull();
+         bt_root = bt_root.nextSiblingElement("BehaviorTree")) {
+        auto tree = BuildTreeFromXML(bt_root, _treenode_models);
+        QString tree_name("BehaviorTree");
 
-            if( bt_root.hasAttribute("ID") )
+        if (bt_root.hasAttribute("ID")) {
+            tree_name = bt_root.attribute("ID");
+            if (_main_tree.isEmpty())  // valid when there is only one
             {
-                tree_name = bt_root.attribute("ID");
-                if( _main_tree.isEmpty() )  // valid when there is only one
-                {
-                    _main_tree = tree_name;
-                }
+                _main_tree = tree_name;
             }
+        }
 //            onCreateAbsBehaviorTree(tree, tree_name);
 //            createAbsBehaviorTree(tree, "left tab", ui->tabWidget);
 //            createAbsBehaviorTree(tree, "right tab", ui->tabWidget_2);
-            createAbsBehaviorTree(tree, name, widget_data.tabWidget);
-        }
+        createAbsBehaviorTree(tree, name, widget_data.tabWidget);
+    }
 
-        if( !_main_tree.isEmpty() )
-        {
-            for (int i=0; i< ui->tabWidget->count(); i++)
-            {
-                if( ui->tabWidget->tabText( i ) == _main_tree)
-                {
-                    ui->tabWidget->tabBar()->moveTab(i, 0);
-                    ui->tabWidget->setCurrentIndex(0);
-                    ui->tabWidget->tabBar()->setTabIcon(0, QIcon(":/icons/svg/star.svg"));
-                    break;
-                }
+    if (!_main_tree.isEmpty()) {
+        for (int i = 0; i < ui->tabWidget->count(); i++) {
+            if (ui->tabWidget->tabText(i) == _main_tree) {
+                ui->tabWidget->tabBar()->moveTab(i, 0);
+                ui->tabWidget->setCurrentIndex(0);
+                ui->tabWidget->tabBar()->setTabIcon(0, QIcon(":/icons/svg/star.svg"));
+                break;
             }
         }
-
-        if( true)
-        {
-            createTab("BehaviorTree", ui->tabWidget);
-            _main_tree = "BehaviorTree";
-        }
-        else{
-            newTabInfo(widget_data)->nodeReorder();
-        }
-        auto models_to_remove = GetModelsToRemove(this, _treenode_models, custom_models);
-
-        for( QString model_name: models_to_remove )
-        {
-            onModelRemoveRequested(model_name);
-        }
-    }
-    catch (std::exception& err) {
-        error = true;
-        err_message = err.what();
-        cout << "ERROR MESSAGE: " << err.what() <<endl;
     }
 
-    if( error )
-    {
+    if (currentTabInfo() == nullptr) {
+        createTab("BehaviorTree", ui->tabWidget);
+        _main_tree = "BehaviorTree";
+    } else {
+        newTabInfo(widget_data)->nodeReorder();
+    }
+    auto models_to_remove = GetModelsToRemove(this, _treenode_models, custom_models);
+
+    for (QString model_name: models_to_remove) {
+        onModelRemoveRequested(model_name);
+    }
+
+    if (error) {
         _treenode_models = prev_tree_model;
-        loadSavedStateFromJson( saved_state );
+        loadSavedStateFromJson(saved_state);
         qDebug() << "R: Undo size: " << _undo_stack.size() << " Redo size: " << _redo_stack.size();
         QMessageBox::warning(this, tr("Exception!"),
-                             tr("It was not possible to parse the file. Error:\n\n%1"). arg( err_message ),
+                             tr("It was not possible to parse the file. Error:\n\n%1").arg(err_message),
                              QMessageBox::Ok);
-    }
-    else{
+    } else {
         newOnSceneChanged(widget_data);
         newOnPushUndo(widget_data);
     }
@@ -528,7 +506,7 @@ void MainWindow::loadFromXML(const QString& xml_text)
             }
         }
 
-        if( true)
+        if( currentTabInfo() == nullptr)
         {
             createTab("BehaviorTree", ui->tabWidget);
             _main_tree = "BehaviorTree";
@@ -980,6 +958,7 @@ MainWindow::SavedState MainWindow::saveCurrentState()
 }
 
 void MainWindow::newOnPushUndo(WidgetData& widget_data){
+    cout << "newOnPushUndo" << endl;
     SavedState saved = newSaveCurrentState(widget_data);
 
     if( _undo_stack.empty() || ( saved != _current_state &&  _undo_stack.back() != _current_state) )
