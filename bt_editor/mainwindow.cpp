@@ -673,26 +673,7 @@ void MainWindow::newOnSceneChanged(WidgetData &widget_data) {
 
 void MainWindow::onSceneChanged() {
     cout << "LAME onSceneChanged" << endl;
-    const bool valid_BT = currentTabInfo()->containsValidTree();
-
-    ui->toolButtonLayout->setEnabled(valid_BT);
-    ui->toolButtonReorder->setEnabled(valid_BT);
-    ui->toolButtonReorder->setEnabled(valid_BT);
-
-    ui->actionSave->setEnabled(valid_BT);
-    QPixmap pix;
-
-    if (valid_BT) {
-        pix.load(":/icons/green-circle.png");
-        ui->labelSemaphore->setToolTip("Valid Tree");
-    } else {
-        pix.load(":/icons/red-circle.png");
-        ui->labelSemaphore->setToolTip("NOT a valid Tree");
-    }
-    ui->labelSemaphore->setPixmap(pix);
-    ui->labelSemaphore->setScaledContents(true);
-
-    lockEditing(_current_mode != GraphicMode::EDITOR);
+    newOnSceneChanged(rightData);
 }
 
 GraphicContainer *MainWindow::newTabInfo(WidgetData &widget_data) {
