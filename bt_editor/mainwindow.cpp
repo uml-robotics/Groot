@@ -548,16 +548,18 @@ void MainWindow::on_actionLoad_triggered() {
 //    QString fileName = QFileDialog::getOpenFileName(this,
 //                                                    tr("Load BehaviorTree from file"), directory_path,
 //                                                    tr("BehaviorTree files (*.xml)"));
-    QString leftFile = directory_path + "/generated_tree.xml";
 
-    QString xml_text = get_XML_from_file(leftFile);
-
+    QString rightFile = directory_path + "/modded_tree.xml";
+    QString right_xml_text = get_XML_from_file(rightFile);
     WidgetData rightData(ui->tabWidget_2);
-    newLoadFromXML(xml_text, "steve", rightData);
+    newLoadFromXML(right_xml_text, "steve", rightData);
 
     cout << "LOADING 2ND ONE" << endl;
+
+    QString leftFile = directory_path + "/generated_tree.xml";
+    QString left_xml_text = get_XML_from_file(leftFile);
     WidgetData leftData(ui->tabWidget);
-    newLoadFromXML(xml_text, "Jedidiah", leftData);
+    newLoadFromXML(left_xml_text, "Jedidiah", leftData);
 }
 
 QString MainWindow::saveToXML() const {
