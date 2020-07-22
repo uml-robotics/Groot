@@ -47,7 +47,7 @@ using QtNodes::NodeState;
 using std::cout;
 using std::endl;
 
-void MainWindow::createAbsBehaviorTree(const AbsBehaviorTree &tree, const QString &bt_name, QTabWidget *target_widget) {
+void MainWindow::newOnCreateAbsBehaviorTree(const AbsBehaviorTree &tree, const QString &bt_name, QTabWidget *target_widget) {
     cout << "CREATING ABS FANCILY" << endl;
     auto container = getTabByName(bt_name);
     if (!container) {
@@ -141,7 +141,7 @@ void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, Wi
          bt_root = bt_root.nextSiblingElement("BehaviorTree")) {
 
         auto tree = BuildTreeFromXML(bt_root, _treenode_models);
-        QString tree_name("BehaviorTree");
+        QString tree_name("another name");
 
         if (bt_root.hasAttribute("ID")) {
             tree_name = bt_root.attribute("ID");
@@ -151,9 +151,9 @@ void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, Wi
             }
         }
 //            onCreateAbsBehaviorTree(tree, tree_name);
-//            createAbsBehaviorTree(tree, "left tab", ui->tabWidget);
-//            createAbsBehaviorTree(tree, "right tab", ui->tabWidget_2);
-        createAbsBehaviorTree(tree, name, widget_data.tabWidget);
+//            newOnCreateAbsBehaviorTree(tree, "left tab", ui->tabWidget);
+//            newOnCreateAbsBehaviorTree(tree, "right tab", ui->tabWidget_2);
+        newOnCreateAbsBehaviorTree(tree, name, widget_data.tabWidget);
     }
 
     if (!_main_tree.isEmpty()) {
@@ -449,6 +449,8 @@ void MainWindow::on_actionLoad_triggered() {
     QString rightFile = directory_path + "/modded_tree.xml";
     QString right_xml_text = get_XML_from_file(rightFile);
     newLoadFromXML(right_xml_text, "steve", rightData);
+    auto right_tab = newTabInfo(rightData);
+    right_tab->scene()->nodes
 
     cout << "LOADING 2ND ONE" << endl;
 
