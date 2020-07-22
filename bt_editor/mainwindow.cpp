@@ -199,12 +199,7 @@ MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
     restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
     restoreState(settings.value("MainWindow/windowState").toByteArray());
 
-    const QString layout = settings.value("MainWindow/layout").toString();
-    if (layout == "HORIZONTAL") {
-        _current_layout = QtNodes::PortLayout::Horizontal;
-    } else {
-        _current_layout = QtNodes::PortLayout::Vertical;
-    }
+    _current_layout = QtNodes::PortLayout::Horizontal;
 
     _model_registry = std::make_shared<QtNodes::DataModelRegistry>();
 
