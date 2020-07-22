@@ -53,6 +53,8 @@ public:
     explicit MainWindow(GraphicMode initial_mode, QWidget *parent = nullptr);
     ~MainWindow() override;
 
+    QDomDocument domFromXML(const QString& xml_text);
+
     void loadFromXML(const QString &xml_text);
 
     void newLoadFromXML(const QString &xml_text, const QString &name, WidgetData& widget_data);

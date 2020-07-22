@@ -69,31 +69,38 @@ void MainWindow::createAbsBehaviorTree(const AbsBehaviorTree &tree, const QStrin
 //    clearUndoStacks();
 }
 
+QDomDocument MainWindow::domFromXML(const QString& xml_text) {
+    QDomDocument document;
+    QString errorMsg;
+    int errorLine;
+    if (!document.setContent(xml_text, &errorMsg, &errorLine)) {
+        throw std::runtime_error(tr("Error parsing XML (line %1): %2").arg(errorLine).arg(errorMsg).toStdString());
+    }
+    //---------------
+    std::vector<QString> registered_ID;
+    for (const auto &it: _treenode_models) {
+        registered_ID.push_back(it.first);
+    }
+    std::vector<QString> error_messages;
+    bool done = VerifyXML(document, registered_ID, error_messages);
+
+    if (!done) {
+        QString merged_error;
+        for (const auto &err: error_messages) {
+            merged_error += err + "\n";
+        }
+        throw std::runtime_error(merged_error.toStdString());
+    }
+    return document;
+}
+
+
 void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, WidgetData &widget_data) {
     QDomDocument document;
     cout << "LOADING FROM XML\n" << endl;
 
     try {
-        QString errorMsg;
-        int errorLine;
-        if (!document.setContent(xml_text, &errorMsg, &errorLine)) {
-            throw std::runtime_error(tr("Error parsing XML (line %1): %2").arg(errorLine).arg(errorMsg).toStdString());
-        }
-        //---------------
-        std::vector<QString> registered_ID;
-        for (const auto &it: _treenode_models) {
-            registered_ID.push_back(it.first);
-        }
-        std::vector<QString> error_messages;
-        bool done = VerifyXML(document, registered_ID, error_messages);
-
-        if (!done) {
-            QString merged_error;
-            for (const auto &err: error_messages) {
-                merged_error += err + "\n";
-            }
-            throw std::runtime_error(merged_error.toStdString());
-        }
+        document = domFromXML(xml_text);
     }
     catch (std::runtime_error &err) {
         QMessageBox messageBox;
