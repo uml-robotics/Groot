@@ -450,7 +450,16 @@ void MainWindow::on_actionLoad_triggered() {
     QString right_xml_text = get_XML_from_file(rightFile);
     newLoadFromXML(right_xml_text, "steve", rightData);
     auto right_tab = newTabInfo(rightData);
-    right_tab->scene()->nodes
+    for (auto& node: right_tab->scene()->nodes()) {
+        auto& constStyle = node.second->nodeDataModel()->nodeStyle();
+        auto& mutStyle = const_cast<QtNodes::NodeStyle&>(constStyle);
+        mutStyle.NormalBoundaryColor.setRgb(123, 12, 123);
+        QString newColor = "blue";
+        mutStyle.GradientColor0.setNamedColor(newColor);
+        mutStyle.GradientColor1.setNamedColor(newColor);
+        mutStyle.GradientColor2.setNamedColor(newColor);
+        mutStyle.GradientColor3.setNamedColor(newColor);
+    }
 
     cout << "LOADING 2ND ONE" << endl;
 
