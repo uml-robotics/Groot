@@ -41,7 +41,7 @@ public:
 
     AbsBehaviorTree loadedTree() const;
 
-    void loadSceneFromTree(const AbsBehaviorTree &tree);
+    AbsBehaviorTree loadSceneFromTree(const AbsBehaviorTree &tree);
 
     void appendTreeToNode(QtNodes::Node& node, AbsBehaviorTree &subtree);
 

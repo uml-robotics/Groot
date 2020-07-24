@@ -12,6 +12,11 @@
 #include <QApplication>
 #include <QInputDialog>
 
+#include <iostream>
+
+using std::cout;
+using std::endl;
+
 using namespace QtNodes;
 
 GraphicContainer::GraphicContainer(std::shared_ptr<DataModelRegistry> model_registry,
@@ -644,12 +649,19 @@ void GraphicContainer::recursiveLoadStep(QPointF& cursor,
 }
 
 
-void GraphicContainer::loadSceneFromTree(const AbsBehaviorTree &tree)
+AbsBehaviorTree GraphicContainer::loadSceneFromTree(const AbsBehaviorTree &tree)
 {
     AbsBehaviorTree abs_tree = tree;
     _scene->clearScene();
 
     auto& first_qt_node = _scene->createNodeAtPos( "Root", "Root", QPointF(0,0) );
+
+    for (auto& node: tree.nodes()) {
+        cout << "name: " << node.instance_name.toStdString() << endl;
+    }
+
+    auto& mutStyle = const_cast<QtNodes::NodeStyle&> (first_qt_node.nodeDataModel()->nodeStyle());
+    mutStyle.GradientColor0.setNamedColor("black");
 
     QPointF cursor( - first_qt_node.nodeGeometry().width()*0.5,
                     - first_qt_node.nodeGeometry().height()*0.5);
@@ -667,6 +679,7 @@ void GraphicContainer::loadSceneFromTree(const AbsBehaviorTree &tree)
 
     recursiveLoadStep(cursor, abs_tree, root_node, &first_qt_node, 1 );
     NodeReorder( *_scene, abs_tree );
+    return abs_tree;
 }
 
 void GraphicContainer::appendTreeToNode(Node &node, AbsBehaviorTree& subtree)

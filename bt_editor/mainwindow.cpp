@@ -47,7 +47,7 @@ using QtNodes::NodeState;
 using std::cout;
 using std::endl;
 
-void MainWindow::newOnCreateAbsBehaviorTree(const AbsBehaviorTree &tree, const QString &bt_name, QTabWidget *target_widget) {
+AbsBehaviorTree MainWindow::newOnCreateAbsBehaviorTree(const AbsBehaviorTree &tree, const QString &bt_name, QTabWidget *target_widget) {
     cout << "CREATING ABS FANCILY" << endl;
     auto container = getTabByName(bt_name);
     if (!container) {
@@ -55,7 +55,7 @@ void MainWindow::newOnCreateAbsBehaviorTree(const AbsBehaviorTree &tree, const Q
         container = createTab(bt_name, target_widget);
     }
     const QSignalBlocker blocker(container);
-    container->loadSceneFromTree(tree);
+    AbsBehaviorTree better_tree = container->loadSceneFromTree(tree);
     container->nodeReorder();
 
 
@@ -67,6 +67,7 @@ void MainWindow::newOnCreateAbsBehaviorTree(const AbsBehaviorTree &tree, const Q
 
     // TODO_ clear or not?
 //    clearUndoStacks();
+    return better_tree;
 }
 
 QDomDocument MainWindow::domFromXML(const QString& xml_text) {
@@ -95,7 +96,7 @@ QDomDocument MainWindow::domFromXML(const QString& xml_text) {
 }
 
 
-void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, WidgetData &widget_data) {
+AbsBehaviorTree MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, WidgetData &widget_data) {
     QDomDocument document;
     cout << "LOADING FROM XML\n" << endl;
 
@@ -106,7 +107,7 @@ void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, Wi
         QMessageBox messageBox;
         messageBox.critical(this, "Error parsing the XML", err.what());
         messageBox.show();
-        return;
+        exit(42);
     }
 
     //---------------
@@ -136,6 +137,7 @@ void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, Wi
 
     const QSignalBlocker blocker(newTabInfo(widget_data));
 
+    AbsBehaviorTree first_tree;
     for (auto bt_root = document_root.firstChildElement("BehaviorTree");
          !bt_root.isNull();
          bt_root = bt_root.nextSiblingElement("BehaviorTree")) {
@@ -153,7 +155,10 @@ void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, Wi
 //            onCreateAbsBehaviorTree(tree, tree_name);
 //            newOnCreateAbsBehaviorTree(tree, "left tab", ui->tabWidget);
 //            newOnCreateAbsBehaviorTree(tree, "right tab", ui->tabWidget_2);
-        newOnCreateAbsBehaviorTree(tree, name, widget_data.tabWidget);
+        cout << "I RUNNETH" << endl;
+        if (bt_root == document_root.firstChildElement("BehaviorTree")) {
+            first_tree = newOnCreateAbsBehaviorTree(tree, name, widget_data.tabWidget);
+        }
     }
 
     if (!_main_tree.isEmpty()) {
@@ -191,6 +196,7 @@ void MainWindow::newLoadFromXML(const QString &xml_text, const QString &name, Wi
         newOnPushUndo(widget_data);
     }
 
+    return first_tree;
 }
 
 MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
@@ -448,8 +454,8 @@ void MainWindow::on_actionLoad_triggered() {
 
     QString rightFile = directory_path + "/modded_tree.xml";
     QString right_xml_text = get_XML_from_file(rightFile);
-    newLoadFromXML(right_xml_text, "steve", rightData);
-    auto right_tab = newTabInfo(rightData);
+    auto right_tree = newLoadFromXML(right_xml_text, "steve", rightData);
+    GraphicContainer* right_tab = newTabInfo(rightData);
     for (auto& node: right_tab->scene()->nodes()) {
         auto& constStyle = node.second->nodeDataModel()->nodeStyle();
         auto& mutStyle = const_cast<QtNodes::NodeStyle&>(constStyle);
@@ -459,13 +465,22 @@ void MainWindow::on_actionLoad_triggered() {
         mutStyle.GradientColor1.setNamedColor(newColor);
         mutStyle.GradientColor2.setNamedColor(newColor);
         mutStyle.GradientColor3.setNamedColor(newColor);
+//        cout << "id: " << node.first.toString().toStdString() << endl;
     }
 
     cout << "LOADING 2ND ONE" << endl;
 
     QString leftFile = directory_path + "/generated_tree.xml";
     QString left_xml_text = get_XML_from_file(leftFile);
-    newLoadFromXML(left_xml_text, "Jedidiah", leftData);
+    auto left_tree = newLoadFromXML(left_xml_text, "Jedidiah", leftData);
+
+    for (int i = 1; i < left_tree.nodes().size() / 2; i++) {
+        auto& constStyle = left_tree.nodes()[i].graphic_node->nodeDataModel()->nodeStyle();
+        auto& mutStyle = const_cast<QtNodes::NodeStyle&>(constStyle);
+        mutStyle.GradientColor1.setNamedColor("green");
+    }
+
+
 }
 
 QString MainWindow::saveToXML() const {

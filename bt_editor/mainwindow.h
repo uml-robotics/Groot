@@ -57,7 +57,7 @@ public:
 
     void loadFromXML(const QString &xml_text);
 
-    void newLoadFromXML(const QString &xml_text, const QString &name, WidgetData& widget_data);
+    AbsBehaviorTree newLoadFromXML(const QString &xml_text, const QString &name, WidgetData& widget_data);
 
     QString saveToXML() const ;
 
@@ -69,7 +69,7 @@ public:
 
     const NodeModels &registeredModels() const;
 
-    void newOnCreateAbsBehaviorTree(const AbsBehaviorTree &tree, const QString &bt_name, QTabWidget * target_widget);
+    AbsBehaviorTree newOnCreateAbsBehaviorTree(const AbsBehaviorTree &tree, const QString &bt_name, QTabWidget * target_widget);
 
     void newActionClearTriggered(bool create_new, WidgetData& widget_data);
 
