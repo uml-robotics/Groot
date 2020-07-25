@@ -51,7 +51,6 @@ AbsBehaviorTree MainWindow::newOnCreateAbsBehaviorTree(const AbsBehaviorTree &tr
     cout << "CREATING ABS FANCILY" << endl;
     auto container = getTabByName(bt_name);
     if (!container) {
-//        cout << "MAKING NEW TABS" << endl;
         container = createTab(bt_name, target_widget);
     }
     const QSignalBlocker blocker(container);
@@ -152,10 +151,7 @@ AbsBehaviorTree MainWindow::newLoadFromXML(const QString &xml_text, const QStrin
                 _main_tree = tree_name;
             }
         }
-//            onCreateAbsBehaviorTree(tree, tree_name);
-//            newOnCreateAbsBehaviorTree(tree, "left tab", ui->tabWidget);
-//            newOnCreateAbsBehaviorTree(tree, "right tab", ui->tabWidget_2);
-        cout << "I RUNNETH" << endl;
+
         if (bt_root == document_root.firstChildElement("BehaviorTree")) {
             first_tree = newOnCreateAbsBehaviorTree(tree, name, widget_data.tabWidget);
         }
@@ -410,7 +406,6 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::loadFromXML(const QString &xml_text) {
-    cout << "LAME Loading from XML\n" << endl;
     newLoadFromXML(xml_text, "Chuck Norris", leftData);
 }
 
@@ -448,28 +443,13 @@ void MainWindow::on_actionLoad_triggered() {
     QString directory_path = settings.value("MainWindow.lastLoadDirectory",
                                             QDir::homePath()).toString();
 
-//    QString fileName = QFileDialog::getOpenFileName(this,
-//                                                    tr("Load BehaviorTree from file"), directory_path,
-//                                                    tr("BehaviorTree files (*.xml)"));
-
     QString rightFile = directory_path + "/modded_tree.xml";
     QString right_xml_text = get_XML_from_file(rightFile);
     auto right_tree = newLoadFromXML(right_xml_text, "steve", rightData);
     GraphicContainer* right_tab = newTabInfo(rightData);
-//    for (auto& node: right_tab->scene()->nodes()) {
-//        auto& constStyle = node.second->nodeDataModel()->nodeStyle();
-//        auto& mutStyle = const_cast<QtNodes::NodeStyle&>(constStyle);
-//        mutStyle.NormalBoundaryColor.setRgb(123, 12, 123);
-//        QString newColor = "blue";
-//        mutStyle.GradientColor0.setNamedColor(newColor);
-//        mutStyle.GradientColor1.setNamedColor(newColor);
-//        mutStyle.GradientColor2.setNamedColor(newColor);
-//        mutStyle.GradientColor3.setNamedColor(newColor);
-////        cout << "id: " << node.first.toString().toStdString() << endl;
-//    }
 
-    cout << "LOADING 2ND ONE" << endl;
 
+    //load 2nd tree
     QString leftFile = directory_path + "/generated_tree.xml";
     QString left_xml_text = get_XML_from_file(leftFile);
     auto left_tree = newLoadFromXML(left_xml_text, "Jedidiah", leftData);
@@ -491,7 +471,6 @@ void MainWindow::on_actionLoad_triggered() {
             mutStyle2.GradientColor2.setNamedColor(color);
             mutStyle2.GradientColor3.setNamedColor(color);
 
-//        cout << left_tree.nodes()[i].instance_name.toStdString() << endl;
         }
     }
 
@@ -691,7 +670,6 @@ void MainWindow::onAutoArrange() {
 }
 
 void MainWindow::newOnSceneChanged(WidgetData &widget_data) {
-//    cout << "onSceneChanged" << endl;
     const bool valid_BT = newTabInfo(widget_data)->containsValidTree();
 
     ui->toolButtonLayout->setEnabled(valid_BT);
@@ -715,19 +693,18 @@ void MainWindow::newOnSceneChanged(WidgetData &widget_data) {
 }
 
 void MainWindow::onSceneChanged() {
-    cout << "LAME onSceneChanged" << endl;
+    cout << "OLD onSceneChanged" << endl;
     newOnSceneChanged(rightData);
 }
 
 GraphicContainer *MainWindow::newTabInfo(WidgetData &widget_data) {
-//    cout << "info" << endl;
     int index = widget_data.tabWidget->currentIndex();
     QString tab_name = widget_data.tabWidget->tabText(index);
     return getTabByName(tab_name);
 }
 
 GraphicContainer *MainWindow::currentTabInfo() {
-    cout << "LAME info" << endl;
+    cout << "OLD info" << endl;
     return newTabInfo(rightData);
 }
 
@@ -790,7 +767,7 @@ MainWindow::SavedState MainWindow::newSaveCurrentState(WidgetData &widget_data) 
 
 
 MainWindow::SavedState MainWindow::saveCurrentState() {
-    cout << "LAME saving\n" << endl;
+    cout << "OLD saving\n" << endl;
     return newSaveCurrentState(rightData);
 }
 
@@ -1113,7 +1090,7 @@ void MainWindow::clearUndoStacks() {
 }
 
 void MainWindow::onCreateAbsBehaviorTree(const AbsBehaviorTree &tree, const QString &bt_name) {
-    cout << "LAME creating abs" << endl;
+    cout << "OLD creating abs" << endl;
     auto container = getTabByName(bt_name);
     auto container2 = getTabByName(bt_name);
     if (!container) {
@@ -1209,7 +1186,7 @@ void MainWindow::newActionClearTriggered(bool create_new, WidgetData &widget_dat
 }
 
 void MainWindow::onActionClearTriggered(bool create_new) {
-    cout << "LAME clearing" << endl;
+    cout << "OLD clearing" << endl;
     for (auto &it: _tab_info) {
         it.second->clearScene();
         it.second->deleteLater();
@@ -1397,7 +1374,6 @@ void MainWindow::on_actionReplay_mode_triggered() {
 }
 
 void MainWindow::on_tabWidget_currentChanged(int index) {
-//    cout << "current changed" << endl;
     if (ui->tabWidget_2->count() == 0) {
         cout << "tabwidget_2 has no tabs" << endl;
         return;
@@ -1456,7 +1432,6 @@ void MainWindow::onChangeNodesStatus(const QString &bt_name,
 }
 
 void MainWindow::onTabCustomContextMenuRequested(const QPoint &pos) {
-    cout << "CUSTOM CONTEXT THINGY" << endl;
     int tab_index = ui->tabWidget->tabBar()->tabAt(pos);
 
     QMenu menu(this);
