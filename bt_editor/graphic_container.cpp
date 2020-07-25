@@ -661,7 +661,7 @@ AbsBehaviorTree GraphicContainer::loadSceneFromTree(const AbsBehaviorTree &tree)
     }
 
     auto& mutStyle = const_cast<QtNodes::NodeStyle&> (first_qt_node.nodeDataModel()->nodeStyle());
-    mutStyle.GradientColor0.setNamedColor("black");
+//    mutStyle.GradientColor0.setNamedColor("black");
 
     QPointF cursor( - first_qt_node.nodeGeometry().width()*0.5,
                     - first_qt_node.nodeGeometry().height()*0.5);

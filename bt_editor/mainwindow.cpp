@@ -456,17 +456,17 @@ void MainWindow::on_actionLoad_triggered() {
     QString right_xml_text = get_XML_from_file(rightFile);
     auto right_tree = newLoadFromXML(right_xml_text, "steve", rightData);
     GraphicContainer* right_tab = newTabInfo(rightData);
-    for (auto& node: right_tab->scene()->nodes()) {
-        auto& constStyle = node.second->nodeDataModel()->nodeStyle();
-        auto& mutStyle = const_cast<QtNodes::NodeStyle&>(constStyle);
-        mutStyle.NormalBoundaryColor.setRgb(123, 12, 123);
-        QString newColor = "blue";
-        mutStyle.GradientColor0.setNamedColor(newColor);
-        mutStyle.GradientColor1.setNamedColor(newColor);
-        mutStyle.GradientColor2.setNamedColor(newColor);
-        mutStyle.GradientColor3.setNamedColor(newColor);
-//        cout << "id: " << node.first.toString().toStdString() << endl;
-    }
+//    for (auto& node: right_tab->scene()->nodes()) {
+//        auto& constStyle = node.second->nodeDataModel()->nodeStyle();
+//        auto& mutStyle = const_cast<QtNodes::NodeStyle&>(constStyle);
+//        mutStyle.NormalBoundaryColor.setRgb(123, 12, 123);
+//        QString newColor = "blue";
+//        mutStyle.GradientColor0.setNamedColor(newColor);
+//        mutStyle.GradientColor1.setNamedColor(newColor);
+//        mutStyle.GradientColor2.setNamedColor(newColor);
+//        mutStyle.GradientColor3.setNamedColor(newColor);
+////        cout << "id: " << node.first.toString().toStdString() << endl;
+//    }
 
     cout << "LOADING 2ND ONE" << endl;
 
@@ -474,10 +474,25 @@ void MainWindow::on_actionLoad_triggered() {
     QString left_xml_text = get_XML_from_file(leftFile);
     auto left_tree = newLoadFromXML(left_xml_text, "Jedidiah", leftData);
 
-    for (int i = 1; i < left_tree.nodes().size() / 2; i++) {
-        auto& constStyle = left_tree.nodes()[i].graphic_node->nodeDataModel()->nodeStyle();
-        auto& mutStyle = const_cast<QtNodes::NodeStyle&>(constStyle);
-        mutStyle.GradientColor1.setNamedColor("green");
+    for (int i = 1; i < std::min(left_tree.nodes().size(), right_tree.nodes().size()); i++) {
+        if (left_tree.nodes()[i].instance_name != right_tree.nodes()[i].instance_name) {
+            QString color = "red";
+            auto &constStyle = left_tree.nodes()[i].graphic_node->nodeDataModel()->nodeStyle();
+            auto &mutStyle = const_cast<QtNodes::NodeStyle &>(constStyle);
+            mutStyle.GradientColor0.setNamedColor(color);
+            mutStyle.GradientColor1.setNamedColor(color);
+            mutStyle.GradientColor2.setNamedColor(color);
+            mutStyle.GradientColor3.setNamedColor(color);
+
+            auto& constStyle2 = right_tree.nodes()[i].graphic_node->nodeDataModel()->nodeStyle();
+            auto& mutStyle2 = const_cast<QtNodes::NodeStyle& >(constStyle2);
+            mutStyle2.GradientColor0.setNamedColor(color);
+            mutStyle2.GradientColor1.setNamedColor(color);
+            mutStyle2.GradientColor2.setNamedColor(color);
+            mutStyle2.GradientColor3.setNamedColor(color);
+
+//        cout << left_tree.nodes()[i].instance_name.toStdString() << endl;
+        }
     }
 
 
