@@ -546,7 +546,8 @@ QString MainWindow::saveToXML() const {
     return xmlDocumentToString(doc);
 }
 
-QString MainWindow::xmlDocumentToString(const QDomDocument &document) const {
+QString MainWindow::xmlDocumentToString(const QDomDocument &document) const
+{
     QString output_string;
 
     QXmlStreamWriter stream(&output_string);
@@ -564,10 +565,12 @@ QString MainWindow::xmlDocumentToString(const QDomDocument &document) const {
 
     auto next_node = root_element.firstChild();
 
-    while (!next_node.isNull()) {
+    while ( !next_node.isNull() )
+    {
         recursivelySaveNodeCanonically(stream, next_node);
 
-        if (stream.hasError()) {
+        if ( stream.hasError() )
+        {
             break;
         }
         next_node = next_node.nextSibling();
