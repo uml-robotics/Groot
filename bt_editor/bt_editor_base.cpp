@@ -113,6 +113,25 @@ bool AbsBehaviorTree::operator ==(const AbsBehaviorTree &other) const
     return true;
 }
 
+std::vector<AbstractTreeNode*> AbsBehaviorTree::subgoals() {
+    std::vector<AbstractTreeNode*> res;
+    for (auto& node: nodes()) {
+        if (!node.children_index.empty()) {
+            bool is_subgoal = true;
+            for (auto child: node.children_index) {
+                auto& grand_kids = _nodes[child].children_index;
+                if (!grand_kids.empty()) {
+                    is_subgoal = false;
+                    break;
+                }
+            }
+            if (is_subgoal) {
+                res.push_back(&node);
+            }
+        }
+    }
+    return res;
+}
 
 
 GraphicMode getGraphicModeFromString(const QString &str)

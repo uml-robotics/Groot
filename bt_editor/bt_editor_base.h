@@ -120,6 +120,8 @@ public:
 
     AbstractTreeNode* addNode(AbstractTreeNode* parent, AbstractTreeNode &&new_node );
 
+    std::vector<AbstractTreeNode*> subgoals();
+
     void debugPrint() const;
 
     bool operator ==(const AbsBehaviorTree &other) const;

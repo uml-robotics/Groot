@@ -454,11 +454,19 @@ void MainWindow::on_actionLoad_triggered() {
     QString left_xml_text = get_XML_from_file(leftFile);
     AbsBehaviorTree left_tree = newLoadFromXML(left_xml_text, "left tab", leftData);
 
-    for (int i = 1; i < std::min(left_tree.nodes().size(), right_tree.nodes().size()); i++) {
-        if (left_tree.nodes()[i].instance_name != right_tree.nodes()[i].instance_name) {
-            QString color = "red";
-            left_tree.nodes()[i].set_background_color(color);
-            right_tree.nodes()[i].set_background_color(color);
+    auto left_goals = left_tree.subgoals();
+    auto right_goals = right_tree.subgoals();
+    for (int i = 0; i < left_goals.size(); i++) {
+        AbstractTreeNode* left_goal = left_tree.subgoals()[i];
+        AbstractTreeNode* right_goal = right_tree.subgoals()[i];
+        for (int j = 0; j < std::min(left_goal->children_index.size(), right_goal->children_index.size()); j++) {
+            AbstractTreeNode& left_node = left_tree.nodes()[left_goal->children_index[j]];
+            AbstractTreeNode& right_node = right_tree.nodes()[right_goal->children_index[j]];
+            if (left_node.instance_name != right_node.instance_name) {
+                QString color = "red";
+                left_node.set_background_color(color);
+                right_node.set_background_color(color);
+            }
         }
     }
 
