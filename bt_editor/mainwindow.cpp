@@ -199,12 +199,13 @@ AbsBehaviorTree MainWindow::newLoadFromXML(const QString &xml_text, const QStrin
 }
 
 MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
-        QMainWindow(parent),
-        ui(new Ui::MainWindow),
-        _current_mode(initial_mode),
-        _current_layout(QtNodes::PortLayout::Vertical),
-        leftData(ui->tabWidget),
-        rightData(ui->tabWidget_2){
+                                                                    QMainWindow(parent),
+                                                                    ui(new Ui::MainWindow),
+                                                                    _current_mode(initial_mode),
+                                                                    _current_layout(QtNodes::PortLayout::Vertical),
+        							    leftData(ui->tabWidget),
+        							    rightData(ui->tabWidget_2)
+{
     ui->setupUi(this);
 
     QSettings settings;
@@ -301,7 +302,7 @@ MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
     {
         if (prev_ID == new_ID)
             return;
-
+            
         for (int index = 0; index < ui->tabWidget->count(); index++)
         {
             if( ui->tabWidget->tabText(index) == prev_ID)
@@ -568,37 +569,40 @@ QString MainWindow::saveToXML() const
     return xmlDocumentToString(doc);
 }
 
-QString MainWindow::xmlDocumentToString(const QDomDocument &document) const {
-    QString output_string;
+QString MainWindow::xmlDocumentToString(const QDomDocument &document) const
+{
+  QString output_string;
 
-    QXmlStreamWriter stream(&output_string);
+  QXmlStreamWriter stream(&output_string);
 
-    stream.setAutoFormatting(true);
-    stream.setAutoFormattingIndent(4);
+  stream.setAutoFormatting(true);
+  stream.setAutoFormattingIndent(4);
 
-    stream.writeStartDocument();
+  stream.writeStartDocument();
 
-    auto root_element = document.documentElement();
+  auto root_element = document.documentElement();
 
-    stream.writeStartElement(root_element.tagName());
+  stream.writeStartElement(root_element.tagName());
 
-    streamElementAttributes(stream, root_element);
+  streamElementAttributes(stream, root_element);
 
-    auto next_node = root_element.firstChild();
+  auto next_node = root_element.firstChild();
 
-    while (!next_node.isNull()) {
-        recursivelySaveNodeCanonically(stream, next_node);
+  while ( !next_node.isNull() )
+  {
+    recursivelySaveNodeCanonically(stream, next_node);
 
-        if (stream.hasError()) {
-            break;
-        }
-        next_node = next_node.nextSibling();
+    if ( stream.hasError() )
+    {
+        break;
     }
+    next_node = next_node.nextSibling();
+  }
 
-    stream.writeEndElement();
-    stream.writeEndDocument();
+  stream.writeEndElement();
+  stream.writeEndDocument();
 
-    return output_string;
+  return output_string;
 }
 
 void MainWindow::streamElementAttributes(QXmlStreamWriter &stream, const QDomElement &element) const
@@ -1205,13 +1209,12 @@ void MainWindow::clearUndoStacks()
     onPushUndo();
 }
 
-void MainWindow::onCreateAbsBehaviorTree(const AbsBehaviorTree &tree, const QString &bt_name) {
-    cout << "OLD creating abs" << endl;
+void MainWindow::onCreateAbsBehaviorTree(const AbsBehaviorTree &tree, const QString &bt_name)
+{
     auto container = getTabByName(bt_name);
     auto container2 = getTabByName(bt_name);
     if( !container )
     {
-        cout << "MAKING NEW TABS" << endl;
         container = createTab("left tab", ui->tabWidget);
         container2 = createTab("right tab", ui->tabWidget_2);
     }
@@ -1533,9 +1536,10 @@ void MainWindow::on_actionReplay_mode_triggered()
     }
 }
 
-void MainWindow::on_tabWidget_currentChanged(int index) {
-    if (ui->tabWidget_2->count() == 0) {
-        cout << "tabwidget_2 has no tabs" << endl;
+void MainWindow::on_tabWidget_currentChanged(int index)
+{
+    if( ui->tabWidget->count() == 0 )
+    {
         return;
     }
     QString tab_name = ui->tabWidget_2->tabText(index);
@@ -1602,7 +1606,6 @@ void MainWindow::onChangeNodesStatus(const QString& bt_name,
 
 void MainWindow::onTabCustomContextMenuRequested(const QPoint &pos)
 {
-    cout << "CUSTOM CONTEXT THINGY" << endl;
     int tab_index = ui->tabWidget->tabBar()->tabAt( pos );
 
     QMenu menu(this);
@@ -1626,7 +1629,6 @@ void MainWindow::onTabCustomContextMenuRequested(const QPoint &pos)
 
 void MainWindow::onTabRenameRequested(int tab_index, QString new_name)
 {
-    cout << "RENAME" << endl;
     QString old_name = this->ui->tabWidget->tabText(tab_index);
 
     if( new_name.isEmpty())
@@ -1684,7 +1686,6 @@ void MainWindow::onTabRenameRequested(int tab_index, QString new_name)
 
 void MainWindow::onTabSetMainTree(int tab_index)
 {
-    cout << "SET MAIN TREE" << endl;
     for (int i=0; i<ui->tabWidget->count(); i++ )
     {
         if( i == tab_index )
