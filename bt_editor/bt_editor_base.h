@@ -84,6 +84,8 @@ struct AbstractTreeNode
     {
         return !(*this == other);
     }
+
+    void set_background_color(QString color);
 };
 
 class AbsBehaviorTree

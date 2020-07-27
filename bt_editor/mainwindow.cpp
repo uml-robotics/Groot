@@ -445,32 +445,20 @@ void MainWindow::on_actionLoad_triggered() {
 
     QString rightFile = directory_path + "/modded_tree.xml";
     QString right_xml_text = get_XML_from_file(rightFile);
-    auto right_tree = newLoadFromXML(right_xml_text, "steve", rightData);
+    AbsBehaviorTree right_tree = newLoadFromXML(right_xml_text, "right tab", rightData);
     GraphicContainer* right_tab = newTabInfo(rightData);
 
 
     //load 2nd tree
     QString leftFile = directory_path + "/generated_tree.xml";
     QString left_xml_text = get_XML_from_file(leftFile);
-    auto left_tree = newLoadFromXML(left_xml_text, "Jedidiah", leftData);
+    AbsBehaviorTree left_tree = newLoadFromXML(left_xml_text, "left tab", leftData);
 
     for (int i = 1; i < std::min(left_tree.nodes().size(), right_tree.nodes().size()); i++) {
         if (left_tree.nodes()[i].instance_name != right_tree.nodes()[i].instance_name) {
             QString color = "red";
-            auto &constStyle = left_tree.nodes()[i].graphic_node->nodeDataModel()->nodeStyle();
-            auto &mutStyle = const_cast<QtNodes::NodeStyle &>(constStyle);
-            mutStyle.GradientColor0.setNamedColor(color);
-            mutStyle.GradientColor1.setNamedColor(color);
-            mutStyle.GradientColor2.setNamedColor(color);
-            mutStyle.GradientColor3.setNamedColor(color);
-
-            auto& constStyle2 = right_tree.nodes()[i].graphic_node->nodeDataModel()->nodeStyle();
-            auto& mutStyle2 = const_cast<QtNodes::NodeStyle& >(constStyle2);
-            mutStyle2.GradientColor0.setNamedColor(color);
-            mutStyle2.GradientColor1.setNamedColor(color);
-            mutStyle2.GradientColor2.setNamedColor(color);
-            mutStyle2.GradientColor3.setNamedColor(color);
-
+            left_tree.nodes()[i].set_background_color(color);
+            right_tree.nodes()[i].set_background_color(color);
         }
     }
 

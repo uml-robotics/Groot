@@ -1,5 +1,6 @@
 #include "bt_editor_base.h"
 #include <behaviortree_cpp_v3/decorators/subtree_node.h>
+#include "../../QtNodeEditor/include/nodes/internal/NodeDataModel.hpp"
 #include <QDebug>
 
 void AbsBehaviorTree::clear()
@@ -140,6 +141,14 @@ bool AbstractTreeNode::operator ==(const AbstractTreeNode &other) const
             size == other.size &&
           // temporary removed  pos == other.pos &&
             instance_name == other.instance_name;
+}
+
+void AbstractTreeNode::set_background_color(QString color) {
+    auto& style = const_cast<QtNodes::NodeStyle&>(graphic_node->nodeDataModel()->nodeStyle());
+    style.GradientColor0.setNamedColor(color);
+    style.GradientColor1.setNamedColor(color);
+    style.GradientColor2.setNamedColor(color);
+    style.GradientColor3.setNamedColor(color);
 }
 
 bool NodeModel::operator ==(const NodeModel &other) const
