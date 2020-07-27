@@ -459,7 +459,8 @@ void MainWindow::on_actionLoad_triggered() {
     for (int i = 0; i < left_goals.size(); i++) {
         AbstractTreeNode* left_goal = left_tree.subgoals()[i];
         AbstractTreeNode* right_goal = right_tree.subgoals()[i];
-        for (int j = 0; j < std::min(left_goal->children_index.size(), right_goal->children_index.size()); j++) {
+        int j;
+        for (j = 0; j < std::min(left_goal->children_index.size(), right_goal->children_index.size()); j++) {
             AbstractTreeNode& left_node = left_tree.nodes()[left_goal->children_index[j]];
             AbstractTreeNode& right_node = right_tree.nodes()[right_goal->children_index[j]];
             if (left_node.instance_name != right_node.instance_name) {
@@ -467,6 +468,11 @@ void MainWindow::on_actionLoad_triggered() {
                 left_node.set_background_color(color);
                 right_node.set_background_color(color);
             }
+        }
+        if (left_goal->children_index.size() != right_goal->children_index.size()) {
+            AbstractTreeNode* longer_goal;
+            if (left_goal->children_index.size() > right_goal->children_index.size()) longer_goal = left_goal;
+            else longer_goal = right_goal;
         }
     }
 
