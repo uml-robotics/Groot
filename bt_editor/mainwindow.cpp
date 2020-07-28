@@ -472,22 +472,25 @@ void MainWindow::on_actionLoad_triggered() {
     auto left_goals = left_tree.subgoals();
     auto right_goals = right_tree.subgoals();
     for (int i = 0; i < left_goals.size(); i++) {
-        AbstractTreeNode* left_goal = left_tree.subgoals()[i];
-        AbstractTreeNode* right_goal = right_tree.subgoals()[i];
+        auto& left_children = left_goals[i]->children_index;
+        auto& right_children = right_goals[i]->children_index;
         int j;
-        for (j = 0; j < std::min(left_goal->children_index.size(), right_goal->children_index.size()); j++) {
-            AbstractTreeNode& left_node = left_tree.nodes()[left_goal->children_index[j]];
-            AbstractTreeNode& right_node = right_tree.nodes()[right_goal->children_index[j]];
+        QString color = "yellow";
+        for (j = 0; j < std::min(left_children.size(), right_children.size()); j++) {
+            AbstractTreeNode& left_node = left_tree.nodes()[left_children[j]];
+            AbstractTreeNode& right_node = right_tree.nodes()[right_children[j]];
             if (left_node.instance_name != right_node.instance_name) {
-                QString color = "red";
                 left_node.set_background_color(color);
                 right_node.set_background_color(color);
             }
         }
-        if (left_goal->children_index.size() != right_goal->children_index.size()) {
-            AbstractTreeNode* longer_goal;
-            if (left_goal->children_index.size() > right_goal->children_index.size()) longer_goal = left_goal;
-            else longer_goal = right_goal;
+        if (left_children.size() != right_children.size()) {
+            AbsBehaviorTree& bigger_tree = (left_children.size() > right_children.size()) ? left_tree : right_tree;
+            auto& more_children = bigger_tree.subgoals()[i]->children_index;
+            for (;j < more_children.size(); j++) {
+                AbstractTreeNode& current_node = bigger_tree.nodes()[more_children[j]];
+                current_node.set_background_color(color);
+            }
         }
     }
 
