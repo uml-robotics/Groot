@@ -431,7 +431,7 @@ QString get_XML_from_file(QString fileName) {
     QSettings settings;
 
     if (!QFileInfo::exists(fileName)) {
-        cout << "FILE DOESN'T EXITS";
+        cout << "FILE DOESN'T EXIST";
         exit(42);
     }
 
@@ -513,27 +513,31 @@ void MainWindow::load_two_trees(const QString &left_xml_text, const QString &rig
     AbsBehaviorTree right_tree = newLoadFromXML(right_xml_text, right_tab_name, rightData);
     AbsBehaviorTree left_tree = newLoadFromXML(left_xml_text, left_tab_name, leftData);
 
-    auto left_goals = left_tree.subgoals();
-    auto right_goals = right_tree.subgoals();
+    std::vector<AbstractTreeNode*> left_goals = left_tree.subgoals();
+    std::vector<AbstractTreeNode*> right_goals = right_tree.subgoals();
     for (int i = 0; i < left_goals.size(); i++) {
         auto& left_children = left_goals[i]->children_index;
         auto& right_children = right_goals[i]->children_index;
         int j;
-        QString color = "olive";
+        QString leaf_color = "olive";
+        QString subgoal_color = "#553";
         for (j = 0; j < std::min(left_children.size(), right_children.size()); j++) {
             AbstractTreeNode& left_node = left_tree.nodes()[left_children[j]];
             AbstractTreeNode& right_node = right_tree.nodes()[right_children[j]];
             if (left_node.instance_name != right_node.instance_name) {
-                left_node.set_background_color(color);
-                right_node.set_background_color(color);
+                left_node.set_background_color(leaf_color);
+                right_node.set_background_color(leaf_color);
+                left_goals[i]->set_background_color(subgoal_color);
+                right_goals[i]->set_background_color(subgoal_color);
             }
         }
         if (left_children.size() != right_children.size()) {
             AbsBehaviorTree& bigger_tree = (left_children.size() > right_children.size()) ? left_tree : right_tree;
-            auto& more_children = bigger_tree.subgoals()[i]->children_index;
-            for (;j < more_children.size(); j++) {
-                AbstractTreeNode& current_node = bigger_tree.nodes()[more_children[j]];
-                current_node.set_background_color(color);
+            AbstractTreeNode* bigger_goal = bigger_tree.subgoals()[i];
+            for (;j < bigger_goal->children_index.size(); j++) {
+                AbstractTreeNode& current_node = bigger_tree.nodes()[bigger_goal->children_index[j]];
+                current_node.set_background_color(leaf_color);
+                bigger_goal->set_background_color(subgoal_color);
             }
         }
     }
