@@ -34,7 +34,6 @@
 #include <string>
 #include <unistd.h>
 
-
 #include "utils.h"
 
 #include "ui_about_dialog.h"
@@ -355,7 +354,10 @@ MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
     onSceneChanged();
     _current_state = saveCurrentState();
 
+    ros::NodeHandle n;
 
+    agent_tree_sub = n.subscribe("agent_tree", 1000, &MainWindow::agentTreeCallback, this);
+    human_tree_sub = n.subscribe("human_tree", 1000, &MainWindow::humanTreeCallback, this);
 }
 
 
@@ -454,21 +456,62 @@ QString get_XML_from_file(QString fileName) {
     return xml_text;
 }
 
+void dispatchToMainThread(std::function<void()> callback)
+{
+    // any thread
+    QTimer* timer = new QTimer();
+    timer->moveToThread(qApp->thread());
+    timer->setSingleShot(true);
+    QObject::connect(timer, &QTimer::timeout, [=]()
+    {
+        // main thread
+        callback();
+        timer->deleteLater();
+    });
+    QMetaObject::invokeMethod(timer, "start", Qt::QueuedConnection, Q_ARG(int, 0));
+}
+
+void MainWindow::humanTreeCallback(const std_msgs::String::ConstPtr& treeStringMsg) {
+    ROS_INFO_STREAM("Received human tree: %s" << treeStringMsg->data);
+
+    if (treeStringMsg->data == "") {
+        ROS_INFO_STREAM("Received empty human tree (\"\"): not doing anything");
+        return;
+    }
+
+    dispatchToMainThread( [&, treeStringMsg]{
+        load_right_tree(QString::fromStdString(treeStringMsg->data));
+    });
+}
+
+void MainWindow::agentTreeCallback(const std_msgs::String::ConstPtr& treeStringMsg) {
+    ROS_INFO_STREAM("Received agent tree: %s" << treeStringMsg->data);
+
+    if (treeStringMsg->data == "") {
+        ROS_INFO_STREAM("Received empty agent tree (\"\"): not doing anything");
+        return;
+    }
+
+    dispatchToMainThread( [&, treeStringMsg]{
+        load_left_tree(QString::fromStdString(treeStringMsg->data));
+    });
+}
+
 void MainWindow::on_actionLoad_triggered() {
-    QSettings settings;
-    QString directory_path = settings.value("MainWindow.lastLoadDirectory",
-                                            QDir::homePath()).toString();
-
-    QString rightFile = directory_path + "/modded_tree.xml";
-    QString right_xml_text = get_XML_from_file(rightFile);
-    AbsBehaviorTree right_tree = newLoadFromXML(right_xml_text, "right tab", rightData);
-    GraphicContainer* right_tab = newTabInfo(rightData);
-
+    QString rightFile = "modded_tree.xml";
+    _right_xml_text = get_XML_from_file(rightFile);
 
     //load 2nd tree
-    QString leftFile = directory_path + "/generated_tree.xml";
-    QString left_xml_text = get_XML_from_file(leftFile);
-    AbsBehaviorTree left_tree = newLoadFromXML(left_xml_text, "left tab", leftData);
+    QString leftFile = "taxi_tree.xml";
+    _left_xml_text = get_XML_from_file(leftFile);
+
+    this->load_two_trees(_left_xml_text, _right_xml_text);
+}
+
+void MainWindow::load_two_trees(const QString &left_xml_text, const QString &right_xml_text) {
+
+    AbsBehaviorTree right_tree = newLoadFromXML(right_xml_text, right_tab_name, rightData);
+    AbsBehaviorTree left_tree = newLoadFromXML(left_xml_text, left_tab_name, leftData);
 
     auto left_goals = left_tree.subgoals();
     auto right_goals = right_tree.subgoals();
@@ -476,7 +519,7 @@ void MainWindow::on_actionLoad_triggered() {
         auto& left_children = left_goals[i]->children_index;
         auto& right_children = right_goals[i]->children_index;
         int j;
-        QString color = "yellow";
+        QString color = "olive";
         for (j = 0; j < std::min(left_children.size(), right_children.size()); j++) {
             AbstractTreeNode& left_node = left_tree.nodes()[left_children[j]];
             AbstractTreeNode& right_node = right_tree.nodes()[right_children[j]];
@@ -494,8 +537,14 @@ void MainWindow::on_actionLoad_triggered() {
             }
         }
     }
+}
 
+void MainWindow::load_left_tree(const QString &left_xml_text) {
+    this->load_two_trees(left_xml_text, _right_xml_text);
+}
 
+void MainWindow::load_right_tree(const QString &right_xml_text) {
+    this->load_two_trees(_left_xml_text, right_xml_text);
 }
 
 QString MainWindow::saveToXML() const
@@ -1219,8 +1268,8 @@ void MainWindow::onCreateAbsBehaviorTree(const AbsBehaviorTree &tree, const QStr
     auto container2 = getTabByName(bt_name);
     if( !container )
     {
-        container = createTab("left tab", ui->tabWidget);
-        container2 = createTab("right tab", ui->tabWidget_2);
+        container = createTab(left_tab_name, ui->tabWidget);
+        container2 = createTab(right_tab_name, ui->tabWidget_2);
     }
     const QSignalBlocker blocker( container );
     container->loadSceneFromTree( tree );

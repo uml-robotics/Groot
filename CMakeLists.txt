@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 3.2)
 
 project(groot)
 
+find_package(roscpp REQUIRED)
+find_package(std_msgs REQUIRED)
+
+include_directories(${roscpp_INCLUDE_DIRS})
+include_directories(${std_msgs_INCLUDE_DIRS})
+
 find_package(Qt5 COMPONENTS  Core Widgets Gui OpenGL Xml Svg)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}  "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
@@ -142,7 +148,7 @@ target_link_libraries(behavior_tree_editor ${GROOT_DEPENDENCIES} )
 
 
 add_executable(Groot ./bt_editor/main.cpp  ${RESOURCE_FILES})
-target_link_libraries(Groot behavior_tree_editor )
+target_link_libraries(Groot behavior_tree_editor ${roscpp_LIBRARIES} ${std_msgs_LIBRARIES})
 
 add_subdirectory(test)
 

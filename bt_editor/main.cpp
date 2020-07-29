@@ -19,6 +19,11 @@ using QtNodes::ConnectionStyle;
 int
 main(int argc, char *argv[])
 {
+    ros::init(argc, argv, "Groot");
+
+    ros::AsyncSpinner spinner(4);
+    spinner.start();
+
     QApplication app(argc, argv);
     app.setApplicationName("Groot");
     app.setWindowIcon(QPixmap(":/icons/BT.png"));
