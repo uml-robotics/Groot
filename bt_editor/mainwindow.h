@@ -22,6 +22,9 @@
 #include "sidepanel_monitor.h"
 #endif
 
+#include <ros/ros.h>
+#include <std_msgs/String.h>
+
 namespace Ui {
 class MainWindow;
 }
@@ -105,6 +108,12 @@ public slots:
     virtual void closeEvent(QCloseEvent *event) override;
 
     void on_actionLoad_triggered();
+
+    void load_two_trees(const QString &left_xml_text, const QString &right_xml_text);
+
+    void load_left_tree(const QString &left_xml_text);
+
+    void load_right_tree(const QString &right_xml_text);
 
     void on_actionSave_triggered();
 
@@ -221,6 +230,22 @@ private:
     WidgetData leftData;
 
     WidgetData rightData;
+
+    QString _left_xml_text;
+    QString _right_xml_text;
+
+
+    void humanTreeCallback(const std_msgs::String::ConstPtr& treeStringMsg);
+
+    void agentTreeCallback(const std_msgs::String::ConstPtr& treeStringMsg);
+
+    ros::Subscriber agent_tree_sub;
+
+    ros::Subscriber human_tree_sub;
+
+    const QString left_tab_name = "Agent";
+
+    const QString right_tab_name = "Human";
 };
 
 
