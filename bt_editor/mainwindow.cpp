@@ -270,8 +270,9 @@ MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
     connect( arrange_shortcut, &QShortcut::activated,
             this,   &MainWindow::onAutoArrange  );
 
-    ui->splitter->setStretchFactor(0, 1);
-    ui->splitter->setStretchFactor(1, 4);
+    // commented to make each panel occupy half
+//    ui->splitter->setStretchFactor(0, 1);
+//    ui->splitter->setStretchFactor(1, 4);
 
     QShortcut* undo_shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z), this);
     connect( undo_shortcut, &QShortcut::activated, this, &MainWindow::onUndoInvoked );
