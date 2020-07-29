@@ -302,7 +302,7 @@ MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
     {
         if (prev_ID == new_ID)
             return;
-            
+
         for (int index = 0; index < ui->tabWidget->count(); index++)
         {
             if( ui->tabWidget->tabText(index) == prev_ID)
@@ -540,10 +540,12 @@ void MainWindow::load_two_trees(const QString &left_xml_text, const QString &rig
 }
 
 void MainWindow::load_left_tree(const QString &left_xml_text) {
+    _left_xml_text = left_xml_text;
     this->load_two_trees(left_xml_text, _right_xml_text);
 }
 
 void MainWindow::load_right_tree(const QString &right_xml_text) {
+    _right_xml_text = right_xml_text;
     this->load_two_trees(_left_xml_text, right_xml_text);
 }
 
