@@ -527,13 +527,16 @@ std::set<QString> GetModelsToRemove(QWidget* parent,
 
     if( prev_custom_models.size() > 0 )
     {
-        int ret = QMessageBox::question(parent, "Clear Palette?",
-                                        "Do you want to remove the previously loaded custom nodes?",
-                                        QMessageBox::No | QMessageBox::Yes );
-        if( ret == QMessageBox::No)
-        {
+        //
+        // commented to avoid the dialogs when new trees are received from the subscriber
+        //
+//        int ret = QMessageBox::question(parent, "Clear Palette?",
+//                                        "Do you want to remove the previously loaded custom nodes?",
+//                                        QMessageBox::No | QMessageBox::Yes );
+//        if( ret == QMessageBox::No)
+//        {
             prev_custom_models.clear();
-        }
+//        }
     }
     return prev_custom_models;
 }
