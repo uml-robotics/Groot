@@ -90,6 +90,7 @@ main(int argc, char *argv[])
 
         MainWindow win( mode );
         win.show();
+        win.on_actionLoad_triggered();
         return app.exec();
     }
 }
