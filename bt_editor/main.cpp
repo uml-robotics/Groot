@@ -57,36 +57,36 @@ main(int argc, char *argv[])
     else{
         auto mode = GraphicMode::EDITOR;
 
-        if( parser.isSet(mode_option) )
-        {
-            QString opt_mode = parser.value(mode_option);
-            if( opt_mode == "editor")
-            {
-                mode = GraphicMode::EDITOR;
-            }
-            else if( opt_mode == "monitor")
-            {
-                mode = GraphicMode::MONITOR;
-            }
-            else if( opt_mode == "replay")
-            {
-                mode = GraphicMode::REPLAY;
-            }
-            else{
-                std::cout << "wrong mode passed to --mode. Use on of these: editor / monitor /replay"
-                          << std::endl;
-                return 0;
-            }
-        }
-        else{
-            StartupDialog dialog;
-            dialog.setWindowFlags( Qt::FramelessWindowHint );
-            if(dialog.exec() != QDialog::Accepted)
-            {
-                return 0;
-            }
-            mode = dialog.getGraphicMode();
-        }
+//        if( parser.isSet(mode_option) )
+//        {
+//            QString opt_mode = parser.value(mode_option);
+//            if( opt_mode == "editor")
+//            {
+//                mode = GraphicMode::EDITOR;
+//            }
+//            else if( opt_mode == "monitor")
+//            {
+//                mode = GraphicMode::MONITOR;
+//            }
+//            else if( opt_mode == "replay")
+//            {
+//                mode = GraphicMode::REPLAY;
+//            }
+//            else{
+//                std::cout << "wrong mode passed to --mode. Use on of these: editor / monitor /replay"
+//                          << std::endl;
+//                return 0;
+//            }
+//        }
+//        else{
+//            StartupDialog dialog;
+//            dialog.setWindowFlags( Qt::FramelessWindowHint );
+//            if(dialog.exec() != QDialog::Accepted)
+//            {
+//                return 0;
+//            }
+//            mode = dialog.getGraphicMode();
+//        }
 
         MainWindow win( mode );
         win.show();
