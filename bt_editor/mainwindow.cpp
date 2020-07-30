@@ -498,11 +498,11 @@ void MainWindow::agentTreeCallback(const std_msgs::String::ConstPtr& treeStringM
 }
 
 void MainWindow::on_actionLoad_triggered() {
-    QString rightFile = "modded_tree.xml";
+    QString rightFile = "uml_test_data/human1.xml";
     _right_xml_text = get_XML_from_file(rightFile);
 
     //load 2nd tree
-    QString leftFile = "taxi_tree.xml";
+    QString leftFile = "uml_test_data/agent1.xml";
     _left_xml_text = get_XML_from_file(leftFile);
 
     this->load_two_trees(_left_xml_text, _right_xml_text);
