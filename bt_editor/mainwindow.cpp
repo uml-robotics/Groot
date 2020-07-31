@@ -513,16 +513,9 @@ void MainWindow::load_two_trees(const QString &left_xml_text, const QString &rig
     AbsBehaviorTree right_tree = newLoadFromXML(right_xml_text, right_tab_name, rightData);
     AbsBehaviorTree left_tree = newLoadFromXML(left_xml_text, left_tab_name, leftData);
 
-    // logic for setting background color for divergence nodes
-
     std::vector<AbstractTreeNode*> left_goals = left_tree.subgoals();
     std::vector<AbstractTreeNode*> right_goals = right_tree.subgoals();
-
-    if (left_goals.size() != right_goals.size())
-        return;
-
     for (int i = 0; i < left_goals.size(); i++) {
-        // assumes left_goals & right_goals are of the same size
         auto& left_children = left_goals[i]->children_index;
         auto& right_children = right_goals[i]->children_index;
         int j;
