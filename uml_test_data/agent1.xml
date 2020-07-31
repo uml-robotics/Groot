@@ -3,28 +3,20 @@
         <Sequence name="Go deliver passenger">
             <Sequence name="Pick up passenger">
                 <Sequence name="Navigate to passenger">
-
-                    <Action ID="MoveRight"/>
-                    <Action ID="MoveRight"/>
-                    <Action ID="MoveRight"/>
-                    <Action ID="MoveUp"/>
-                    <Action ID="MoveUp"/>
-                    <Action ID="MoveLeft"/>
-                    <Action ID="Pickup"/>
-
+                    <Action ID="MoveRight" name="" />
+                    <Action ID="MoveRight" name="" />
+                    <Action ID="MoveUp" name="" />
+                    <Action ID="MoveUp" name="" />
+                    <Action ID="Pickup" name="" />
                 </Sequence>
             </Sequence>
             <Sequence name="Drop off passenger">
                 <Sequence name="Navigate to dropoff">
-
-                    <Action ID="MoveRight"/>
-                    <Action ID="MoveDown"/>
-                    <Action ID="MoveDown"/>
-                    <Action ID="MoveLeft"/>
-                    <Action ID="MoveLeft"/>
-                    <Action ID="MoveLeft"/>
-                    <Action ID="Dropoff"/>
-
+                    <Action ID="MoveDown" name="" />
+                    <Action ID="MoveDown" name="" />
+                    <Action ID="MoveLeft" name="" />
+                    <Action ID="MoveLeft" name="" />
+                    <Action ID="Dropoff" name="" />
                 </Sequence>
             </Sequence>
         </Sequence>
