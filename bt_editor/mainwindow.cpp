@@ -524,7 +524,7 @@ void MainWindow::load_two_trees(const QString &left_xml_text, const QString &rig
         for (j = 0; j < std::min(left_children.size(), right_children.size()); j++) {
             AbstractTreeNode& left_node = left_tree.nodes()[left_children[j]];
             AbstractTreeNode& right_node = right_tree.nodes()[right_children[j]];
-            if (left_node.instance_name != right_node.instance_name) {
+            if (left_node.model.registration_ID != right_node.model.registration_ID) {
                 left_node.set_background_color(leaf_color);
                 right_node.set_background_color(leaf_color);
                 left_goals[i]->set_background_color(subgoal_color);
