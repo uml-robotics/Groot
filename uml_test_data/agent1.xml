@@ -16,6 +16,7 @@
                     <Action ID="MoveDown" name="" />
                     <Action ID="MoveLeft" name="" />
                     <Action ID="MoveLeft" name="" />
+                    <Action ID="MoveRight" name="" />
                     <Action ID="Dropoff" name="" />
                 </Sequence>
             </Sequence>

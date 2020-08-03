@@ -33,6 +33,8 @@
 #include <cstdlib>
 #include <string>
 #include <unistd.h>
+#include <sstream>
+#include "../dtl/dtl/dtl.hpp"
 
 #include "utils.h"
 
@@ -43,8 +45,11 @@ using QtNodes::FlowView;
 using QtNodes::FlowScene;
 using QtNodes::NodeGraphicsObject;
 using QtNodes::NodeState;
+
 using std::cout;
 using std::endl;
+using std::vector;
+using std::string;
 
 AbsBehaviorTree MainWindow::newOnCreateAbsBehaviorTree(const AbsBehaviorTree &tree, const QString &bt_name, QTabWidget *target_widget) {
     cout << "CREATING ABS FANCILY" << endl;
@@ -508,6 +513,24 @@ void MainWindow::on_actionLoad_triggered() {
     this->load_two_trees(_left_xml_text, _right_xml_text);
 }
 
+vector<string> vec_from_stream(std::istream& input) {
+    vector<string> res;
+    string str;
+    while (getline(input, str)) {
+        res.push_back(str);
+    }
+    return res;
+}
+
+template <typename T>
+void showVec(vector<T> v) {
+    cout << "SHOWING A VECTOR" << endl;
+    for (auto& e: v) {
+        cout << e << endl;
+    }
+    cout << endl;
+}
+
 void MainWindow::load_two_trees(const QString &left_xml_text, const QString &right_xml_text) {
 
     AbsBehaviorTree right_tree = newLoadFromXML(right_xml_text, right_tab_name, rightData);
@@ -515,30 +538,58 @@ void MainWindow::load_two_trees(const QString &left_xml_text, const QString &rig
 
     std::vector<AbstractTreeNode*> left_goals = left_tree.subgoals();
     std::vector<AbstractTreeNode*> right_goals = right_tree.subgoals();
+
+    QString leaf_color = "olive";
+    QString subgoal_color = "#553";
+
     for (int i = 0; i < left_goals.size(); i++) {
         auto& left_children = left_goals[i]->children_index;
         auto& right_children = right_goals[i]->children_index;
-        int j;
-        QString leaf_color = "olive";
-        QString subgoal_color = "#553";
-        for (j = 0; j < std::min(left_children.size(), right_children.size()); j++) {
-            AbstractTreeNode& left_node = left_tree.nodes()[left_children[j]];
-            AbstractTreeNode& right_node = right_tree.nodes()[right_children[j]];
-            if (left_node.model.registration_ID != right_node.model.registration_ID) {
-                left_node.set_background_color(leaf_color);
-                right_node.set_background_color(leaf_color);
-                left_goals[i]->set_background_color(subgoal_color);
-                right_goals[i]->set_background_color(subgoal_color);
+
+        vector<string> left_IDs;
+        vector<string> right_IDs;
+
+        for (int idx: left_children) {
+            left_IDs.push_back(left_tree.node(idx)->model.registration_ID.toStdString());
+        }
+
+        for (int idx: right_children) {
+            right_IDs.push_back(right_tree.node(idx)->model.registration_ID.toStdString());
+        }
+
+        dtl::Diff<string, vector<string> > diff(left_IDs, right_IDs);
+        diff.compose();
+        diff.composeUnifiedHunks();
+
+        std::stringstream ss;
+        diff.printUnifiedFormat(ss);
+
+        auto diff_vec = vec_from_stream(ss);
+        vector<string> lVec;
+        vector<string> rVec;
+        for (int j = 1; j < diff_vec.size(); j++) {
+            char first_c = diff_vec[j][0];
+            if (first_c == ' ' || first_c == '-') lVec.push_back(diff_vec[j]);
+            if (first_c == ' ' || first_c == '+') rVec.push_back(diff_vec[j]);
+        }
+
+        for (int j = 0; j < lVec.size(); j++) {
+            char first_c = lVec[j][0];
+            if (first_c == '-') {
+                left_tree.node(left_children[j])->set_background_color(leaf_color);
             }
         }
-        if (left_children.size() != right_children.size()) {
-            AbsBehaviorTree& bigger_tree = (left_children.size() > right_children.size()) ? left_tree : right_tree;
-            AbstractTreeNode* bigger_goal = bigger_tree.subgoals()[i];
-            for (;j < bigger_goal->children_index.size(); j++) {
-                AbstractTreeNode& current_node = bigger_tree.nodes()[bigger_goal->children_index[j]];
-                current_node.set_background_color(leaf_color);
-                bigger_goal->set_background_color(subgoal_color);
+
+        for (int j = 0; j < rVec.size(); j++) {
+            char first_c = rVec[j][0];
+            if (first_c == '+') {
+                right_tree.node(right_children[j])->set_background_color(leaf_color);
             }
+        }
+
+        if (lVec != rVec) {
+            left_goals[i]->set_background_color(subgoal_color);
+            right_goals[i]->set_background_color(subgoal_color);
         }
     }
 }
