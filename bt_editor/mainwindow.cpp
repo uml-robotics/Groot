@@ -35,6 +35,7 @@
 #include <unistd.h>
 #include <sstream>
 #include "../dtl/dtl/dtl.hpp"
+#include <cctype>
 
 #include "utils.h"
 
@@ -531,6 +532,16 @@ void showVec(vector<T> v) {
     cout << endl;
 }
 
+string leave_only_letters(const string& str) {
+    string res;
+    for (auto& c: str) {
+        if (std::isalpha(c)) {
+            res.push_back(c);
+        }
+    }
+    return res;
+}
+
 void MainWindow::load_two_trees(const QString &left_xml_text, const QString &right_xml_text) {
 
     AbsBehaviorTree right_tree = newLoadFromXML(right_xml_text, right_tab_name, rightData);
@@ -550,11 +561,13 @@ void MainWindow::load_two_trees(const QString &left_xml_text, const QString &rig
         vector<string> right_IDs;
 
         for (int idx: left_children) {
-            left_IDs.push_back(left_tree.node(idx)->model.registration_ID.toStdString());
+            string id = leave_only_letters(left_tree.node(idx)->model.registration_ID.toStdString());
+            left_IDs.push_back(id);
         }
 
         for (int idx: right_children) {
-            right_IDs.push_back(right_tree.node(idx)->model.registration_ID.toStdString());
+            string id = leave_only_letters(right_tree.node(idx)->model.registration_ID.toStdString());
+            right_IDs.push_back(id);
         }
 
         dtl::Diff<string, vector<string> > diff(left_IDs, right_IDs);
