@@ -532,7 +532,7 @@ void showVec(vector<T> v) {
     cout << endl;
 }
 
-string without_number(const string& str) {
+string leave_only_letters(const string& str) {
     string res;
     for (auto& c: str) {
         if (std::isalpha(c)) {
@@ -561,12 +561,12 @@ void MainWindow::load_two_trees(const QString &left_xml_text, const QString &rig
         vector<string> right_IDs;
 
         for (int idx: left_children) {
-            string id = without_number(left_tree.node(idx)->model.registration_ID.toStdString());
+            string id = leave_only_letters(left_tree.node(idx)->model.registration_ID.toStdString());
             left_IDs.push_back(id);
         }
 
         for (int idx: right_children) {
-            string id = without_number(right_tree.node(idx)->model.registration_ID.toStdString());
+            string id = leave_only_letters(right_tree.node(idx)->model.registration_ID.toStdString());
             right_IDs.push_back(id);
         }
 
