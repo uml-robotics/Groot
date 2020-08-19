@@ -550,8 +550,8 @@ void MainWindow::load_two_trees(const QString &left_xml_text, const QString &rig
     std::vector<AbstractTreeNode*> left_goals = left_tree.subgoals();
     std::vector<AbstractTreeNode*> right_goals = right_tree.subgoals();
 
-    QString leaf_color = "olive";
-    QString subgoal_color = "#553";
+    QString leaf_color = "#1B1B57";
+    QString subgoal_color = "#333355";
 
     for (int i = 0; i < left_goals.size(); i++) {
         auto& left_children = left_goals[i]->children_index;
