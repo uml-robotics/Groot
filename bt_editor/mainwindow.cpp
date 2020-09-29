@@ -36,6 +36,8 @@
 #include <sstream>
 #include "../dtl/dtl/dtl.hpp"
 #include <cctype>
+#include <chrono>
+#include <thread>
 
 #include "utils.h"
 
@@ -203,6 +205,24 @@ AbsBehaviorTree MainWindow::newLoadFromXML(const QString &xml_text, const QStrin
     return first_tree;
 }
 
+void MainWindow::process_hovers() {
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+    cout << "HI SOME MORE" << endl;
+
+    AbsBehaviorTree::NodesVector& rightNodes = rightData.tree.nodes();
+    AbstractTreeNode* hovered_node = nullptr;
+    while (true) {
+        for (AbstractTreeNode& node: rightNodes) {
+            if (node.graphic_node->nodeGeometry().hovered() && &node != hovered_node) {
+                cout << "HOVERED ON: " << node.instance_name.toStdString() << endl;
+                hovered_node = &node;
+            }
+        }
+        std::this_thread::sleep_for(std::chrono::microseconds(1));
+    }
+
+}
+
 MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
                                                                     QMainWindow(parent),
                                                                     ui(new Ui::MainWindow),
@@ -364,6 +384,12 @@ MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
 
     agent_tree_sub = n.subscribe("agent_tree", 1000, &MainWindow::agentTreeCallback, this);
     human_tree_sub = n.subscribe("human_tree", 1000, &MainWindow::humanTreeCallback, this);
+
+
+    cout << "\n\n\n\n\n\nHI\n\n\n\n\n" << endl;
+
+    std::thread aThread(&MainWindow::process_hovers, this);
+    aThread.detach();
 }
 
 
@@ -546,6 +572,8 @@ void MainWindow::load_two_trees(const QString &left_xml_text, const QString &rig
 
     AbsBehaviorTree right_tree = newLoadFromXML(right_xml_text, right_tab_name, rightData);
     AbsBehaviorTree left_tree = newLoadFromXML(left_xml_text, left_tab_name, leftData);
+
+    rightData.tree = right_tree;
 
     std::vector<AbstractTreeNode*> left_goals = left_tree.subgoals();
     std::vector<AbstractTreeNode*> right_goals = right_tree.subgoals();

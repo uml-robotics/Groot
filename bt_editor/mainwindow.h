@@ -40,6 +40,7 @@ struct WidgetData {
         this->tabWidget = target_widget;
     }
 
+    AbsBehaviorTree tree;
     QTabWidget* tabWidget;
 };
 
@@ -158,6 +159,8 @@ private slots:
     void on_actionReportIssue_triggered();
 
 private:
+
+    void process_hovers();
 
     void updateCurrentMode();
 
