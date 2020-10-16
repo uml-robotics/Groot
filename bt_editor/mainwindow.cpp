@@ -206,20 +206,25 @@ AbsBehaviorTree MainWindow::newLoadFromXML(const QString &xml_text, const QStrin
 }
 
 void MainWindow::process_hovers() {
-//    ros::
+    ros::Publisher hover_pub = n.advertise<std_msgs::String>("hovered_nodes", 1000);
 
-    AbsBehaviorTree::NodesVector& rightNodes = rightData.tree.nodes();
+//    AbsBehaviorTree::NodesVector& rightNodes = rightData.tree.nodes();
     AbstractTreeNode* hovered_node = nullptr;
-    vector<AbstractTreeNode *> right_subgoals = rightData.tree.subgoals();
 
     while (true) {
-        for (AbstractTreeNode& node: rightNodes) {
-            if (node.graphic_node->nodeGeometry().hovered() && &node != hovered_node) {
-                cout << "HOVERED ON: " << node.instance_name.toStdString() << endl;
-                hovered_node = &node;
+        //needs to be in the loop since there are no subgoals until tree actually loaded
+        vector<AbstractTreeNode *> right_subgoals = rightData.tree.subgoals();
+        
+        for (AbstractTreeNode* node: right_subgoals) {
+            if (node->graphic_node->nodeGeometry().hovered() && node != hovered_node) {
+                cout << "HOVERED ON: " << node->instance_name.toStdString() << "\tPUBLISHING" << endl;
+                std_msgs::String msg;
+                msg.data = node->instance_name.toStdString();
+                hover_pub.publish(msg);
+                hovered_node = node;
             }
         }
-        std::this_thread::sleep_for(std::chrono::microseconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 
 }
