@@ -206,11 +206,12 @@ AbsBehaviorTree MainWindow::newLoadFromXML(const QString &xml_text, const QStrin
 }
 
 void MainWindow::process_hovers() {
-    std::this_thread::sleep_for(std::chrono::seconds(3));
-    cout << "HI SOME MORE" << endl;
+//    ros::
 
     AbsBehaviorTree::NodesVector& rightNodes = rightData.tree.nodes();
     AbstractTreeNode* hovered_node = nullptr;
+    vector<AbstractTreeNode *> right_subgoals = rightData.tree.subgoals();
+
     while (true) {
         for (AbstractTreeNode& node: rightNodes) {
             if (node.graphic_node->nodeGeometry().hovered() && &node != hovered_node) {
@@ -380,13 +381,9 @@ MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
     onSceneChanged();
     _current_state = saveCurrentState();
 
-    ros::NodeHandle n;
-
     agent_tree_sub = n.subscribe("agent_tree", 1000, &MainWindow::agentTreeCallback, this);
     human_tree_sub = n.subscribe("human_tree", 1000, &MainWindow::humanTreeCallback, this);
 
-
-    cout << "\n\n\n\n\n\nHI\n\n\n\n\n" << endl;
 
     std::thread aThread(&MainWindow::process_hovers, this);
     aThread.detach();

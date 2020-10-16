@@ -249,6 +249,8 @@ private:
     const QString left_tab_name = "Agent";
 
     const QString right_tab_name = "Human";
+
+    ros::NodeHandle n;
 };
 
 
