@@ -206,24 +206,42 @@ AbsBehaviorTree MainWindow::newLoadFromXML(const QString &xml_text, const QStrin
 }
 
 void MainWindow::process_hovers() {
-    ros::Publisher hover_pub = n.advertise<std_msgs::String>("hovered_nodes", 1000);
+    ros::Publisher right_hover_pub = n.advertise<std_msgs::String>("human_hovered_nodes", 1000);
+    ros::Publisher left_hover_pub = n.advertise<std_msgs::String>("agent_hovered_nodes", 1000);
+
 
 //    AbsBehaviorTree::NodesVector& rightNodes = rightData.tree.nodes();
     AbstractTreeNode* hovered_node = nullptr;
 
     while (true) {
-        //needs to be in the loop since there are no subgoals until tree actually loaded
-        vector<AbstractTreeNode *> right_subgoals = rightData.tree.subgoals();
-        
-        for (AbstractTreeNode* node: right_subgoals) {
+        std_msgs::String msg;
+//        bool any_previously_hovered = (hovered_node != nullptr);
+
+        //right side
+        for (AbstractTreeNode* node: rightData.tree.subgoals()) {
             if (node->graphic_node->nodeGeometry().hovered() && node != hovered_node) {
-                cout << "HOVERED ON: " << node->instance_name.toStdString() << "\tPUBLISHING" << endl;
-                std_msgs::String msg;
+                cout << "RIGHT TREE: hovered on " << node->instance_name.toStdString() << "\tPUBLISHING" << endl;
                 msg.data = node->instance_name.toStdString();
-                hover_pub.publish(msg);
+                right_hover_pub.publish(msg);
                 hovered_node = node;
             }
         }
+
+        //left side
+        for (AbstractTreeNode* node: leftData.tree.subgoals()) {
+            if (node->graphic_node->nodeGeometry().hovered() && node != hovered_node) {
+                cout << "LEFT TREE: hovered on " << node->instance_name.toStdString() << "\tPUBLISHING" << endl;
+                msg.data = node->instance_name.toStdString();
+                left_hover_pub.publish(msg);
+                hovered_node = node;
+            }
+        }
+
+//        //stopped hovering on any subgoals
+//        if (any_previously_hovered && hovered_node == nullptr) {
+//
+//        }
+
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 
@@ -575,6 +593,7 @@ void MainWindow::load_two_trees(const QString &left_xml_text, const QString &rig
     AbsBehaviorTree right_tree = newLoadFromXML(right_xml_text, right_tab_name, rightData);
     AbsBehaviorTree left_tree = newLoadFromXML(left_xml_text, left_tab_name, leftData);
 
+    leftData.tree = left_tree;
     rightData.tree = right_tree;
 
     std::vector<AbstractTreeNode*> left_goals = left_tree.subgoals();
