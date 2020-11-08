@@ -160,7 +160,7 @@ private slots:
 
 private:
 
-    void process_hovers();
+    void detect_and_publish_hovers();
 
     void updateCurrentMode();
 

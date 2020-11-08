@@ -205,17 +205,14 @@ AbsBehaviorTree MainWindow::newLoadFromXML(const QString &xml_text, const QStrin
     return first_tree;
 }
 
-void MainWindow::process_hovers() {
+void MainWindow::detect_and_publish_hovers() {
     ros::Publisher right_hover_pub = n.advertise<std_msgs::String>("human_hovered_nodes", 1000);
     ros::Publisher left_hover_pub = n.advertise<std_msgs::String>("agent_hovered_nodes", 1000);
 
-
-//    AbsBehaviorTree::NodesVector& rightNodes = rightData.tree.nodes();
     AbstractTreeNode* hovered_node = nullptr;
 
     while (true) {
         std_msgs::String msg;
-//        bool any_previously_hovered = (hovered_node != nullptr);
 
         //right side
         for (AbstractTreeNode* node: rightData.tree.subgoals()) {
@@ -237,14 +234,8 @@ void MainWindow::process_hovers() {
             }
         }
 
-//        //stopped hovering on any subgoals
-//        if (any_previously_hovered && hovered_node == nullptr) {
-//
-//        }
-
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
-
 }
 
 MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
@@ -408,7 +399,7 @@ MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
     human_tree_sub = n.subscribe("human_tree", 1000, &MainWindow::humanTreeCallback, this);
 
 
-    std::thread aThread(&MainWindow::process_hovers, this);
+    std::thread aThread(&MainWindow::detect_and_publish_hovers, this);
     aThread.detach();
 }
 
