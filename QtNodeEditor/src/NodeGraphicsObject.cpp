@@ -21,6 +21,8 @@
 using QtNodes::NodeGraphicsObject;
 using QtNodes::Node;
 using QtNodes::FlowScene;
+using std::cout;
+using std::endl;
 
 NodeGraphicsObject::
 NodeGraphicsObject(FlowScene &scene,
@@ -355,6 +357,8 @@ NodeGraphicsObject::
 hoverEnterEvent(QGraphicsSceneHoverEvent * event)
 {
   // bring all the colliding nodes to background
+  cout << "hovering" << endl;
+
   QList<QGraphicsItem *> overlapItems = collidingItems();
 
   for (QGraphicsItem *item : overlapItems)

@@ -40,6 +40,7 @@ struct WidgetData {
         this->tabWidget = target_widget;
     }
 
+    AbsBehaviorTree tree;
     QTabWidget* tabWidget;
 };
 
@@ -159,6 +160,8 @@ private slots:
 
 private:
 
+    void detect_and_publish_hovers();
+
     void updateCurrentMode();
 
     void lockEditing(const bool locked);
@@ -246,6 +249,8 @@ private:
     const QString left_tab_name = "Agent";
 
     const QString right_tab_name = "Human";
+
+    ros::NodeHandle n;
 };
 
 

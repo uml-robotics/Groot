@@ -36,6 +36,8 @@
 #include <sstream>
 #include "../dtl/dtl/dtl.hpp"
 #include <cctype>
+#include <chrono>
+#include <thread>
 
 #include "utils.h"
 
@@ -203,6 +205,39 @@ AbsBehaviorTree MainWindow::newLoadFromXML(const QString &xml_text, const QStrin
     return first_tree;
 }
 
+void MainWindow::detect_and_publish_hovers() {
+    ros::Publisher right_hover_pub = n.advertise<std_msgs::String>("human_hovered_nodes", 1000);
+    ros::Publisher left_hover_pub = n.advertise<std_msgs::String>("agent_hovered_nodes", 1000);
+
+    AbstractTreeNode* hovered_node = nullptr;
+
+    while (true) {
+        std_msgs::String msg;
+
+        //right side
+        for (AbstractTreeNode* node: rightData.tree.subgoals()) {
+            if (node->graphic_node->nodeGeometry().hovered() && node != hovered_node) {
+                cout << "RIGHT TREE: hovered on " << node->instance_name.toStdString() << "\tPUBLISHING" << endl;
+                msg.data = node->instance_name.toStdString();
+                right_hover_pub.publish(msg);
+                hovered_node = node;
+            }
+        }
+
+        //left side
+        for (AbstractTreeNode* node: leftData.tree.subgoals()) {
+            if (node->graphic_node->nodeGeometry().hovered() && node != hovered_node) {
+                cout << "LEFT TREE: hovered on " << node->instance_name.toStdString() << "\tPUBLISHING" << endl;
+                msg.data = node->instance_name.toStdString();
+                left_hover_pub.publish(msg);
+                hovered_node = node;
+            }
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+}
+
 MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
                                                                     QMainWindow(parent),
                                                                     ui(new Ui::MainWindow),
@@ -360,10 +395,12 @@ MainWindow::MainWindow(GraphicMode initial_mode, QWidget *parent) :
     onSceneChanged();
     _current_state = saveCurrentState();
 
-    ros::NodeHandle n;
-
     agent_tree_sub = n.subscribe("agent_tree", 1000, &MainWindow::agentTreeCallback, this);
     human_tree_sub = n.subscribe("human_tree", 1000, &MainWindow::humanTreeCallback, this);
+
+
+    std::thread aThread(&MainWindow::detect_and_publish_hovers, this);
+    aThread.detach();
 }
 
 
@@ -546,6 +583,9 @@ void MainWindow::load_two_trees(const QString &left_xml_text, const QString &rig
 
     AbsBehaviorTree right_tree = newLoadFromXML(right_xml_text, right_tab_name, rightData);
     AbsBehaviorTree left_tree = newLoadFromXML(left_xml_text, left_tab_name, leftData);
+
+    leftData.tree = left_tree;
+    rightData.tree = right_tree;
 
     std::vector<AbstractTreeNode*> left_goals = left_tree.subgoals();
     std::vector<AbstractTreeNode*> right_goals = right_tree.subgoals();
